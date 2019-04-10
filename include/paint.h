@@ -9,6 +9,7 @@
 #include <utility>
 
 namespace Paint {
+    constexpr int MIN_COORDINATE = -8192, MAX_COORDINATE = 8192; 
     struct RGBColor { 
         std::uint8_t red, green, blue;
 
@@ -70,41 +71,34 @@ namespace Paint {
         }
     };
         
-    class Pen {
-    private:
-        std::reference_wrapper<Canvas> canvas;
+    class Element {
+    protected:
         RGBColor color;
 
     public:
-        Pen(Canvas& canvas, RGBColor color = RGBColor()) :
-            canvas(canvas), color(color) { }
-        
-        Pen(Pen&& other) = default;
-        
-        Pen& operator = (Pen&& other) = default;
-         
-        void operator() (int x, int y) const {
-            canvas.get().setPixel(x, y, color);
-        }
-    };
-     
-    class Element {
-    public:
-        virtual void paint(const Pen& pen) = 0;
+        Element(RGBColor color = RGBColor()) : color(color) {}
+        virtual void paint(Canvas& canvas) = 0;
         virtual void translate(float dx, float dy) = 0;
         virtual void rotate(float dx, float dy, float rdeg) = 0;
         virtual ~Element() = default;
     };
 
+    enum class LineDrawingAlgorithm : int { DDA, Bresenham };
+    enum class CurveDrawingAlgorithm : int { Bezier, BSpline };
+    enum class LineClippingAlgorithm : int { CohenSutherland, LiangBarsky };
+
     class LineElement : public Element {
     private:
         float x1, y1, x2, y2;
+        LineDrawingAlgorithm algo;
 
     public:
-        LineElement(float x1, float y1, float x2, float y2) :
-            x1(x1), y1(y1), x2(x2), y2(y2) {};
+        LineElement(float x1, float y1, float x2, float y2, 
+                RGBColor color = RGBColor(),
+                LineDrawingAlgorithm algo = LineDrawingAlgorithm::DDA) :
+            Element(color), x1(x1), y1(y1), x2(x2), y2(y2), algo(algo) {};
                 
-        void paint(const Pen& pen) override;
+        void paint(Canvas& canvas) override;
 
         void translate(float dx, float dy) override {
             x1 += dx; y1 += dy;
@@ -114,24 +108,34 @@ namespace Paint {
         void rotate(float dx, float dy, float rdeg) override {
             throw std::runtime_error("not implemented");
         }
+
+        void clip(float x1, float y1, float x2, float y2, 
+                LineClippingAlgorithm algo);
     };
 
     class PolygonElement : public Element {
     private:
-        std::vector<std::pair<float, float>> vertices;
-    
+        std::vector<std::pair<float, float>> points;
+        LineDrawingAlgorithm algo;
+         
     public:
-        PolygonElement(std::vector<std::pair<float, float>> vertices) :
-            vertices(std::move(vertices)) {}
+        PolygonElement(std::vector<std::pair<float, float>> points,
+                RGBColor color = RGBColor(), 
+                LineDrawingAlgorithm algo = LineDrawingAlgorithm::DDA) :
+            Element(color), points(std::move(points)), algo(algo) {}
              
-        void paint(const Pen& pen) override;
+        void paint(Canvas& canvas) override;
+
         void translate(float dx, float dy) override {
-            for (auto& p : vertices) {
+            for (auto& p : points) {
                 p.first += dx;
                 p.second += dy;
             }
         }
-        void rotate(float dx, float dy, float rdeg) override;
+
+        void rotate(float dx, float dy, float rdeg) override {
+            throw std::runtime_error("not implemented");   
+        }
     };
 }
 
