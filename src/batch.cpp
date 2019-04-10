@@ -10,6 +10,8 @@
 #include "libbmp.h"
 #include "common.h"
 
+using std::stod
+
 static LibBmp::BmpCanvas canvas;
 static Paint::Pen pen(canvas);
 static std::unordered_map<int, std::unique_ptr<Paint::Element>> elems;
@@ -27,32 +29,34 @@ using CommandHandler = void (*)(std::vector<std::string>& args);
 static void resetCanvas(std::vector<std::string>& args) {
     if (args.size() != 3) 
         throw std::invalid_argument("invalid argument number");
-    std::size_t width = str2uint<std::size_t>(args[1]), 
-                height = str2uint<std::size_t>(args[2]);
+    std::size_t width = from_string<std::size_t>(args[1]), 
+                height = from_string<std::size_t>(args[2]);
     canvas.reset(width, height);
 }
 
 static void saveCanvas(std::vector<std::string>& args) {
     if (args.size() != 2)
         throw std::invalid_argument("invalid argument number");
+    for (auto& e : elems)
+        e.second->paint(pen);
     canvas.save(args[1]);
 }
 
 static void setColor(std::vector<std::string>& args) {
     if (args.size() != 4)
         throw std::invalid_argument("invalid argument number");
-    std::uint8_t red = str2uint<std::uint8_t>(args[1]),
-                 green = str2uint<std::uint8_t>(args[2]),
-                 blue = str2uint<std::uint8_t>(args[3]);
+    std::uint8_t red = from_string<std::uint8_t>(args[1]),
+                 green = from_string<std::uint8_t>(args[2]),
+                 blue = from_string<std::uint8_t>(args[3]);
     pen = Paint::Pen(canvas, Paint::RGBColor(red, green, blue));
 }
 
 static void drawLine(std::vector<std::string>& args) {
-    if (args.size() != 6)  
+    if (args.size() != 7) 
         throw std::invalid_argument("invalid argument number");
-    int id = str2int(args[1]);
-    float x1 = str2float(args[2]), y1 = str2float(args[3]),
-          x2 = str2float(args[4]), y2 = str2float(args[5]);
+    int id = from_string(args[1]);
+    float x1 = from_string<float>(args[2]), y1 = from_string<float>(args[3]),
+          x2 = from_string<float>(args[4]), y2 = from_string<float>(args[5]);
     if (!elems.emplace(id, new Paint::LineElement(x1, y1, x2, y2)).second) 
         throw std::invalid_argument(
             "id " + std::to_string(id) + " already exists");

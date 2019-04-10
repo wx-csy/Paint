@@ -15,19 +15,22 @@ SRCS = $(shell find $(SRC_DIR)/ -name "*.cpp")
 OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
 
 .DEFAULT_GOAL = $(BINARY)
-.PHONY : clean
+.PHONY : clean run
 
 $(BUILD_DIR)/%.o : $(SRC_DIR)/%.cpp
 	@mkdir -p $(dir $@)
 	@echo + [CXX] $@
 	@$(CXX) $(CXXFLAGS) -c -o $@ $<
 
--include $(COBJS:.o=.d)
+-include $(OBJS:.o=.d)
 
 $(BINARY) : $(OBJS)
 	@mkdir -p $(dir $@)
 	@echo + [LD] $@
 	@$(LD) $(LDFLAGS) -o $@ $^
+
+run : $(BINARY)
+	@./$(BINARY)
 
 clean :
 	@echo - [RM] $(BUILD_DIR)

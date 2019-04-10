@@ -110,7 +110,8 @@ namespace LibBmp {
             Canvas(width, height), bmpimg(width, height) { }
         
         Paint::RGBColor getPixel(int x, int y) const override {
-            if (x < 0 || y < 0 || x >= width || y >= height)
+            if (x < 0 || y < 0 || 
+                std::size_t(x) >= width || std::size_t(y) >= height)
                 throw std::range_error("pixel out of range");
             uint8_t r = bmpimg.red_at(x, y),
                     g = bmpimg.green_at(x, y),
@@ -119,7 +120,8 @@ namespace LibBmp {
         }
         
         void setPixel(int x, int y, Paint::RGBColor color) override {
-            if (x < 0 || y < 0 || x >= width || y >= height)
+            if (x < 0 || y < 0 || 
+                std::size_t(x) >= width || std::size_t(y) >= height)
                 return;
             bmpimg.set_pixel(x, y, color.red, color.green, color.blue); 
         }

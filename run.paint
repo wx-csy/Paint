@@ -1,0 +1,4 @@
+resetCanvas 100 100
+setColor 50 50 50
+drawLine 1 10 10 20 20 DDA
+saveCanvas test.bmp

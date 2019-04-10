@@ -50,13 +50,15 @@ namespace Paint {
         MemoryCanvas& operator = (MemoryCanvas&& other) = delete;
         
         RGBColor getPixel(int x, int y) const override {
-            if (x < 0 || y < 0 || x >= width || y >= height) 
+            if (x < 0 || y < 0 || 
+                std::size_t(x) >= width || std::size_t(y) >= height) 
                 throw std::range_error("pixel out of canvas");
             return data[width * y + x];
         }
         
         void setPixel(int x, int y, RGBColor color) override {
-            if (x < 0 || y < 0 || x >= width || y >= height) 
+            if (x < 0 || y < 0 || 
+                std::size_t(x) >= width || std::size_t(y) >= height) 
                 return;
             data[width * y + x] = color;
         }
@@ -102,9 +104,7 @@ namespace Paint {
         LineElement(float x1, float y1, float x2, float y2) :
             x1(x1), y1(y1), x2(x2), y2(y2) {};
                 
-        void paint(const Pen& pen) override {
-            throw std::runtime_error("not implemented");
-        }
+        void paint(const Pen& pen) override;
 
         void translate(float dx, float dy) override {
             x1 += dx; y1 += dy;
