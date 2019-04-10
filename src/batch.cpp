@@ -1,5 +1,6 @@
 #include <vector>
 #include <string>
+#include <utility>
 #include <iostream>
 #include <algorithm>
 #include <unordered_map>
@@ -55,11 +56,35 @@ static void drawLine(std::vector<std::string>& args) {
     if (args.size() != 7) 
         throw std::invalid_argument("invalid argument number");
     int id = from_string(args[1]);
-    float x1 = from_string(args[2]), y1 = from_string<float>(args[3]),
-          x2 = from_string(args[4]), y2 = from_string<float>(args[5]);
+    float x1 = from_string<float>(args[2]), y1 = from_string<float>(args[3]),
+          x2 = from_string<float>(args[4]), y2 = from_string<float>(args[5]);
     if (!elems.emplace(id, 
             new Paint::LineElement(x1, y1, x2, y2, forecolor, 
                 ldalg.at(args[6]))).second) 
+        throw std::invalid_argument(
+            "id " + std::to_string(id) + " already exists");
+}
+
+static void drawPolygon(std::vector<std::string>& args) {
+    if (args.size() != 4) 
+        throw std::invalid_argument("invalid argument number");
+    int id = from_string(args[1]);
+    std::size_t nr_point = 
+        limit_range<std::size_t>(from_string(args[2]), 2, 1000000);
+    std::string str;
+    Paint::LineDrawingAlgorithm algo = ldalg.at(args[3]);
+    if (std::getline(std::cin, str).fail())
+        throw std::invalid_argument("points of polygon expected");
+    line++;
+    std::vector<std::string> points_str = util::split(str);
+    if (points_str.size() != nr_point * 2)
+        throw std::invalid_argument("invalid number of coordinates");
+    std::vector<std::pair<float, float>> points;
+    for (size_t i = 0; i < nr_point; i++) 
+        points.emplace_back(from_string<float>(points_str[i*2]),
+                            from_string<float>(points_str[i*2+1]));
+    if (!elems.emplace(id,
+                new Paint::PolygonElement(points, forecolor, algo)).second)
         throw std::invalid_argument(
             "id " + std::to_string(id) + " already exists");
 }
@@ -69,6 +94,7 @@ static const std::unordered_map<std::string, CommandHandler> handler {
     { "saveCanvas",     saveCanvas      },
     { "setColor",       setColor        },
     { "drawLine",       drawLine        },
+    { "drawPolygon",    drawPolygon     },
 };
 
 void batch() {

@@ -61,9 +61,11 @@ namespace Paint {
                 DrawLine_DDA(canvas, color, 
                     points[i-1].first, points[i-1].second, 
                     points[i].first, points[i].second);
-            DrawLine_DDA(canvas, color, 
-                points.front().first, points.front().second,
-                points.back().first, points.back().second);
+            if (points.size() > 2) {
+                DrawLine_DDA(canvas, color, 
+                    points.back().first, points.back().second,
+                    points.front().first, points.front().second);
+            }
             break;
         case LineDrawingAlgorithm::Bresenham :
             throw std::runtime_error("not implemented");
