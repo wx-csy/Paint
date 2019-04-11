@@ -18,14 +18,14 @@ static void DrawLine_DDA(Paint::Canvas& canvas, Paint::RGBColor color,
         canvas.setPixel(ix1, iy1, color);
     } else if (abs(ix1 - ix2) > abs(iy1 - iy2)) {
         if (ix1 > ix2) { swap(ix1, ix2); swap(iy1, iy2); };
-        float slope = (y2 - y1) / (x2 - x1);
-        for (int x = ix1; x <= ix2; x++) 
-            canvas.setPixel(x, lround(iy1 + slope * (x - ix1)), color);
+        float slope = (y2 - y1) / (x2 - x1), y = iy1;
+        for (int x = ix1; x <= ix2; x++, y += slope) 
+            canvas.setPixel(x, lround(y), color);
     } else {
         if (iy1 > iy2) { swap(ix1, ix2); swap(iy1, iy2); };
-        float slope = (x2 - x1) / (y2 - y1);
-        for (int y = iy1; y <= iy2; y++) 
-            canvas.setPixel(lround(ix1 + slope * (y - iy1)), y, color);
+        float slope = (x2 - x1) / (y2 - y1), x = ix1;
+        for (int y = iy1; y <= iy2; y++, x += slope) 
+            canvas.setPixel(lround(x), y, color);
     }
 }
 

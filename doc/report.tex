@@ -7,6 +7,8 @@
 \usepackage{xeCJK}
 \usepackage{fancyhdr}
 \usepackage{verbatim}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 \usepackage{hyperref}
 \pagestyle{fancy}
 \lhead{}
@@ -16,6 +18,7 @@
 \cfoot{}
 \rfoot{\thepage}
 \setCJKmainfont[BoldFont=SimHei,ItalicFont=KaiTi]{SimSun}
+\setCJKmonofont{KaiTi}
 \setmainfont{Times New Roman}
 \setmonofont{Courier New}
 \renewcommand\refname{参考文献}
@@ -29,11 +32,30 @@
 \maketitle
 
 \section{综述}
-\dots
+
+
 
 \section{算法介绍}
-\subsection{\dots}
-\dots\cite{Aspnes:1973}
+绘制曲线$f(x,y) = 0$的基本原则是：当$\left|\frac{\mathrm{d}y}{\mathrm{d}x} \big|_{(x_0, y_0)} \right| \leq 1$时，沿$x$轴递进采样画点；当$\left|\frac{\mathrm{d}y}{\mathrm{d}x} \big|_{(x_0, y_0)} \right| > 1$时，沿$y$轴递进采样画点。这样可以保证相邻两个绘制点$(x_i, y_i), (x_{i+1}, y_{i+1})$之间满足$\max\{|x_i - x_{i+1}|, |y_i - y_{i+1}|\} = 1$。
+
+\subsection{DDA算法}
+
+DDA算法是利用对曲线微分方程积分的方法来绘制曲线的。DDA算法通常用于绘制线段、多边形等，但也可用来绘制非线性曲线\cite{wiki:DDA}。利用DDA算法绘制线段的伪代码如下：
+
+\begin{algorithm}[htb] 
+\caption{DDA画线算法} 
+\label{alg:DDA} 
+\begin{algorithmic}[1] 
+\Require 
+线段的两个端点$(x_1, y_1)$, $(x_2, y_2)$。假定$x_1 < x_2, |x_2 - x_1| \geq |y_2 - y_1|$。
+\State $y = y_1, k = \frac{y_2 - y_1}{x_2 - x_1}$
+\For{$x = x_1$ to $x_2$}
+    \State plot $[x], [y]$
+    \State $y = y + k$
+\EndFor
+\end{algorithmic} 
+\end{algorithm}
+
 \subsection{\dots}
 \dots
 		
