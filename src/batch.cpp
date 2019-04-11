@@ -60,7 +60,7 @@ static void drawLine(std::vector<std::string>& args) {
     float x1 = from_string<float>(args[2]), y1 = from_string<float>(args[3]),
           x2 = from_string<float>(args[4]), y2 = from_string<float>(args[5]);
     if (!elems.emplace(id, 
-            new Paint::LineElement(x1, y1, x2, y2, forecolor, 
+            new Paint::Line(x1, y1, x2, y2, forecolor, 
                 ldalg.at(args[6]))).second) 
         throw std::invalid_argument(
             "id " + std::to_string(id) + " already exists");
@@ -84,8 +84,18 @@ static void drawPolygon(std::vector<std::string>& args) {
     for (size_t i = 0; i < nr_point; i++) 
         points.emplace_back(from_string<float>(points_str[i*2]),
                             from_string<float>(points_str[i*2+1]));
-    if (!elems.emplace(id,
-                new Paint::PolygonElement(points, forecolor, algo)).second)
+    if (!elems.emplace(id, new Paint::Polygon(points, forecolor, algo)).second)
+        throw std::invalid_argument(
+            "id " + std::to_string(id) + " already exists");
+}
+
+static void drawEllipse(std::vector<std::string>& args) {
+    if (args.size() != 6) 
+        throw std::invalid_argument("invalid argument number");
+    int id = from_string(args[1]);
+    float x = from_string<float>(args[2]), y = from_string<float>(args[3]),
+          rx = from_string<float>(args[4]), ry = from_string<float>(args[5]);
+    if (!elems.emplace(id, new Paint::Ellipse(x, y, rx, ry, forecolor)).second)
         throw std::invalid_argument(
             "id " + std::to_string(id) + " already exists");
 }
@@ -106,6 +116,7 @@ static const std::unordered_map<std::string, CommandHandler> handler {
     { "setColor",       setColor        },
     { "drawLine",       drawLine        },
     { "drawPolygon",    drawPolygon     },
+    { "drawEllipse",    drawEllipse     },
     { "translate",      translate       },
     { "#",              comment         },
 };

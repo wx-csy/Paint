@@ -14,23 +14,23 @@ namespace Paint {
     struct RGBColor { 
         std::uint8_t red, green, blue;
 
-        RGBColor(std::uint8_t red = 0, 
+        constexpr RGBColor(std::uint8_t red = 0, 
                  std::uint8_t green = 0, 
                  std::uint8_t blue = 0) :
             red(red), green(green), blue(blue) { }
     };
 
     namespace Colors {
-        const RGBColor black(0, 0, 0);
-        const RGBColor white(255, 255, 255); 
+        constexpr RGBColor black(0, 0, 0);
+        constexpr RGBColor white(255, 255, 255); 
     }
     
     class Canvas {
-        friend class Pen;
     protected:
         std::size_t width, height;
         Canvas(std::size_t width, std::size_t height) :
             width(width), height(height) { }
+
     public:
         virtual RGBColor getPixel(int x, int y) const = 0;
         virtual void setPixel(int x, int y, RGBColor color) = 0;
@@ -40,6 +40,7 @@ namespace Paint {
                 for (size_t y = 0; y < height; y++) 
                     setPixel(x, y, color);
         }
+        virtual ~Canvas() = default;
     };
 
     class MemoryCanvas : public Canvas {
@@ -98,13 +99,13 @@ namespace Paint {
     enum class CurveDrawingAlgorithm : int { Bezier, BSpline };
     enum class LineClippingAlgorithm : int { CohenSutherland, LiangBarsky };
 
-    class LineElement : public Element {
+    class Line : public Element {
     private:
         float x1, y1, x2, y2;
         LineDrawingAlgorithm algo;
 
     public:
-        LineElement(float x1, float y1, float x2, float y2, 
+        Line(float x1, float y1, float x2, float y2, 
                 RGBColor color = RGBColor(),
                 LineDrawingAlgorithm algo = LineDrawingAlgorithm::DDA) :
             Element(color), x1(x1), y1(y1), x2(x2), y2(y2), algo(algo) {};
@@ -128,13 +129,13 @@ namespace Paint {
                 LineClippingAlgorithm algo);
     };
 
-    class PolygonElement : public Element {
+    class Polygon : public Element {
     private:
         std::vector<std::pair<float, float>> points;
         LineDrawingAlgorithm algo;
          
     public:
-        PolygonElement(std::vector<std::pair<float, float>> points,
+        Polygon(std::vector<std::pair<float, float>> points,
                 RGBColor color = RGBColor(), 
                 LineDrawingAlgorithm algo = LineDrawingAlgorithm::DDA) :
             Element(color), points(std::move(points)), algo(algo) {}
@@ -146,6 +147,32 @@ namespace Paint {
                 p.first += dx;
                 p.second += dy;
             }
+        }
+
+        void rotate(float x, float y, float rdeg) override {
+            throw std::runtime_error("not implemented");   
+        }
+        
+        void scale(float x, float y, float s) override {
+            throw std::runtime_error("not implemented");
+        }
+
+    };
+    
+    class Ellipse : public Element {
+    private:
+        float x, y, rx, ry; 
+         
+    public:
+        Ellipse(float x, float y, float rx, float ry,
+                RGBColor color = RGBColor()) :
+            Element(color), x(x), y(y), rx(rx), ry(ry) {}
+             
+        void paint(Canvas& canvas) override;
+
+        void translate(float dx, float dy) override {
+            x += dx;
+            y += dy;
         }
 
         void rotate(float x, float y, float rdeg) override {

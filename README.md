@@ -10,8 +10,8 @@
 - [x] drawPolygon
   - [x] DDA
   - [x] Bresenham
-- [ ] drawEllipse
-  - [ ] Mid-point
+- [x] drawEllipse
+  - [x] Mid-point
 - [ ] drawCurve
   - [ ] Bezier
   - [ ] B-spline
@@ -49,7 +49,7 @@ To build the software, simply type
 make
 ```
 
-The target executable is  `build/paint`.
+The target executable is  `build/painter`.
 
 ##  License
 

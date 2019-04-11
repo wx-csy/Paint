@@ -64,11 +64,51 @@ static void DrawLine_Bresenham(Paint::Canvas& canvas, Paint::RGBColor color,
     }
 }
 
+static void DrawEllipse_Midpoint(Paint::Canvas& canvas, Paint::RGBColor color,
+        float x, float y, float rx, float ry) {
+    long long
+        ix = limit_range(x, Paint::MIN_COORDINATE, Paint::MAX_COORDINATE), 
+        iy = limit_range(y, Paint::MIN_COORDINATE, Paint::MAX_COORDINATE), 
+        irx = limit_range(rx, Paint::MIN_COORDINATE, Paint::MAX_COORDINATE), 
+        iry = limit_range(ry, Paint::MIN_COORDINATE, Paint::MAX_COORDINATE),
+        irx2 = irx * irx,
+        iry2 = iry * iry;
+
+    auto quaddraw = [&] (int cx, int cy) {
+        canvas.setPixel(ix + cx, iy + cy, color);
+        canvas.setPixel(ix - cx, iy + cy, color);
+        canvas.setPixel(ix + cx, iy - cy, color);
+        canvas.setPixel(ix - cx, iy - cy, color);
+    };
+    quaddraw(0, iry);
+    quaddraw(irx, 0);
+    
+    for (int i = 0; i < 2; i++) {
+        long long p = iry2 - irx2 * iry + irx2 / 4.0;
+        long long px = 0, py = 2 * irx2 * iry;
+        int cx = 0, cy = iry;
+        while (px < py) {
+            cx++;
+            px += 2 * iry2;
+            if (p < 0) {
+                p += iry2 + px;
+            } else {
+                cy--;
+                py -= 2 * irx2;
+                p += iry2 + px - py;
+            }
+            if (i == 0) quaddraw(cx, cy); else quaddraw(cy, cx);
+        }
+        swap(irx, iry);
+        swap(irx2, iry2);
+    }
+}
+
 namespace Paint {
     //
-    // class LineElement : public Element
+    // class Line : public Element
     //
-    void LineElement::paint(Canvas& canvas) {
+    void Line::paint(Canvas& canvas) {
         switch (algo) {
         case LineDrawingAlgorithm::DDA :
             DrawLine_DDA(canvas, color, x1, y1, x2, y2);
@@ -81,15 +121,15 @@ namespace Paint {
         }
     }
 
-    void LineElement::clip(float x1, float y1, float x2, float y2, 
+    void Line::clip(float x1, float y1, float x2, float y2, 
             LineClippingAlgorithm algo) {
         throw std::runtime_error("not implemented");
     }
 
     //
-    // class PolygonElement : public Element
+    // class Polygon : public Element
     //
-    void PolygonElement::paint(Canvas& canvas) {
+    void Polygon::paint(Canvas& canvas) {
         switch (algo) {
         case LineDrawingAlgorithm::DDA :
             for (size_t i = 1; i < points.size(); i++)
@@ -114,5 +154,12 @@ namespace Paint {
         default:
             throw std::invalid_argument("unknown algorithm");
         }
+    }
+    
+    //
+    // class Ellipse : public Element
+    //
+    void Ellipse::paint(Canvas& canvas) {
+        DrawEllipse_Midpoint(canvas, color, x, y, rx, ry);    
     }
 }
