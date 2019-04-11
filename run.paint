@@ -6,3 +6,6 @@ setColor 250 0 0
 drawPolygon 3 4 Bresenham
 222 222 222 444 423 448 475 129
 saveCanvas test.bmp
+translate 3 -100 -100
+saveCanvas test1.bmp
+

@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <functional>
 #include <utility>
 
@@ -34,6 +35,11 @@ namespace Paint {
         virtual RGBColor getPixel(int x, int y) const = 0;
         virtual void setPixel(int x, int y, RGBColor color) = 0;
         virtual void reset(size_t width, size_t height) = 0;
+        virtual void clear(RGBColor color = Colors::white) {
+            for (size_t x = 0; x < width; x++)
+                for (size_t y = 0; y < height; y++) 
+                    setPixel(x, y, color);
+        }
     };
 
     class MemoryCanvas : public Canvas {
@@ -63,6 +69,10 @@ namespace Paint {
                 return;
             data[width * y + x] = color;
         }
+        
+        void clear(RGBColor color = Colors::white) override {
+            std::fill(data.begin(), data.end(), color);
+        }
 
         void reset(std::size_t width, std::size_t height) {
             this->width = width;
@@ -79,7 +89,8 @@ namespace Paint {
         Element(RGBColor color = RGBColor()) : color(color) {}
         virtual void paint(Canvas& canvas) = 0;
         virtual void translate(float dx, float dy) = 0;
-        virtual void rotate(float dx, float dy, float rdeg) = 0;
+        virtual void rotate(float x, float y, float rdeg) = 0;
+        virtual void scale(float x, float y, float s) = 0;
         virtual ~Element() = default;
     };
 
@@ -105,7 +116,11 @@ namespace Paint {
             x2 += dx; y2 += dy;
         }
 
-        void rotate(float dx, float dy, float rdeg) override {
+        void rotate(float x, float y, float rdeg) override {
+            throw std::runtime_error("not implemented");
+        }
+
+        void scale(float x, float y, float s) override {
             throw std::runtime_error("not implemented");
         }
 
@@ -133,9 +148,14 @@ namespace Paint {
             }
         }
 
-        void rotate(float dx, float dy, float rdeg) override {
+        void rotate(float x, float y, float rdeg) override {
             throw std::runtime_error("not implemented");   
         }
+        
+        void scale(float x, float y, float s) override {
+            throw std::runtime_error("not implemented");
+        }
+
     };
 }
 

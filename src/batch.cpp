@@ -36,6 +36,7 @@ static void resetCanvas(std::vector<std::string>& args) {
 }
 
 static void saveCanvas(std::vector<std::string>& args) {
+    canvas.clear();
     if (args.size() != 2)
         throw std::invalid_argument("invalid argument number");
     for (auto& e : elems)
@@ -89,6 +90,14 @@ static void drawPolygon(std::vector<std::string>& args) {
             "id " + std::to_string(id) + " already exists");
 }
 
+static void translate(std::vector<std::string>& args) {
+    if (args.size() != 4) 
+        throw std::invalid_argument("invalid argument number");
+    int id = from_string(args[1]);
+    float dx = from_string<float>(args[2]), dy = from_string<float>(args[3]);
+    elems.at(id)->translate(dx, dy);
+}
+
 static void comment(std::vector<std::string>& args) {}
 
 static const std::unordered_map<std::string, CommandHandler> handler {
@@ -97,6 +106,7 @@ static const std::unordered_map<std::string, CommandHandler> handler {
     { "setColor",       setColor        },
     { "drawLine",       drawLine        },
     { "drawPolygon",    drawPolygon     },
+    { "translate",      translate       },
     { "#",              comment         },
 };
 

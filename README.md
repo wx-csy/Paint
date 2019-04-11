@@ -1,5 +1,33 @@
 # Paint
 
+## Development Status
+
+- [x] saveCanvas
+- [x] setColor
+- [x] drawLine
+  - [x] DDA
+  - [x] Bresenham
+- [x] drawPolygon
+  - [x] DDA
+  - [x] Bresenham
+- [ ] drawEllipse
+  - [ ] Mid-point
+- [ ] drawCurve
+  - [ ] Bezier
+  - [ ] B-spline
+- [x] translate
+  - [x] Line
+  - [x] Polygon
+  - [ ] Ellipse
+  - [ ] Curve
+- [ ] rotate
+  - [ ] Line
+  - [ ] Polygon
+  - [ ] Ellipse
+  - [ ] Curve
+- [ ] clip (line)
+
+
 ## Environment
 
 This software is developed, compiled and tested on the following platform:
