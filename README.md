@@ -25,6 +25,11 @@
   - [ ] Polygon
   - [ ] Ellipse
   - [ ] Curve
+- [ ] scale
+  - [ ] Line
+  - [ ] Polygon
+  - [ ] Ellipse
+  - [ ] Curve
 - [ ] clip (line)
 
 
