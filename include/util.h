@@ -1,6 +1,7 @@
 #ifndef __UTIL_H__
 #define __UTIL_H__
 
+#include <cmath>
 #include <string>
 #include <iterator>
 #include <type_traits>
@@ -49,7 +50,12 @@ namespace util {
         if (T_cast(val) < T_cast(lower) || 
             T_cast(val) > T_cast(upper))
             throw std::range_error("value out of range");
-        return val;
+        if (std::is_floating_point<T_from>::value && 
+            std::is_integral<T_to>::value) {
+            return std::round(val);
+        } else {
+            return val;
+        }
     }
 
     static inline std::vector<std::string> split(std::string str) {

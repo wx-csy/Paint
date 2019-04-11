@@ -89,12 +89,15 @@ static void drawPolygon(std::vector<std::string>& args) {
             "id " + std::to_string(id) + " already exists");
 }
 
+static void comment(std::vector<std::string>& args) {}
+
 static const std::unordered_map<std::string, CommandHandler> handler {
     { "resetCanvas",    resetCanvas     },
     { "saveCanvas",     saveCanvas      },
     { "setColor",       setColor        },
     { "drawLine",       drawLine        },
     { "drawPolygon",    drawPolygon     },
+    { "#",              comment         },
 };
 
 void batch() {

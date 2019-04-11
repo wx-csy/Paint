@@ -1,8 +1,8 @@
 resetCanvas 500 500
-setColor 250 250 250
-drawLine 1 10 10 200 300 DDA
+# setColor 250 250 250
+# drawLine 1 10 10 200 300 Bresenham
 setColor 250 0 0
-drawLine 2 20 30 40 50 DDA
-drawPolygon 3 4 DDA
-222 222 222 444 444 444 444 222
+# drawLine 2 20 30 40 50 DDA
+drawPolygon 3 4 Bresenham
+222 222 222 444 423 448 475 129
 saveCanvas test.bmp
