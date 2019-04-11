@@ -1,5 +1,5 @@
 \documentclass[a4paper,12pt]{article}
-\usepackage[left=2.0cm, right=2.0cm, top=3.0cm, bottom=2.0cm]{geometry}
+\usepackage[left=2.0cm, right=2.0cm, top=2.5cm, bottom=2.0cm]{geometry}
 \usepackage{indentfirst}
 \usepackage{amsmath, amssymb, amsfonts}
 \usepackage{multirow}
@@ -7,21 +7,46 @@
 \usepackage{xeCJK}
 \usepackage{fancyhdr}
 \usepackage{verbatim}
+\usepackage{hyperref}
 \pagestyle{fancy}
+\lhead{}
 \chead{图形学大作业系统报告}
 \rhead{陈劭源(161240004)}
 \lfoot{}
 \cfoot{}
 \rfoot{\thepage}
 \setCJKmainfont[BoldFont=SimHei,ItalicFont=KaiTi]{SimSun}
-\setmainfont{Arial}
+\setmainfont{Times New Roman}
 \setmonofont{Courier New}
+\renewcommand\refname{参考文献}
+\graphicspath{{figures/}}
 
 \title{图形学大作业系统报告}
-\author{陈劭源(161240004)}
+\author{陈劭源(161240004) \\ \href{mailto:sy\_chen@smail.nju.edu.cn}{sy\_chen@smail.nju.edu.cn}}
 \date{\today}
 
 \begin{document}
 \maketitle
 
+\section{综述}
+\dots
+
+\section{算法介绍}
+\subsection{\dots}
+\dots\cite{Aspnes:1973}
+\subsection{\dots}
+\dots
+		
+\section{系统介绍}
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{uml.pdf}
+\caption{系统的UML类图}
+\end{figure}
+\section{总结}
+\dots
+
+\bibliographystyle{plain}%
+%"xxx" should be your citing file's name.
+\bibliography{report}
 \end{document}

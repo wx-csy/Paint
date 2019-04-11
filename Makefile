@@ -7,6 +7,7 @@ BINARY  ?= $(BUILD_DIR)/$(TARGET_NAME)
 CXX     = g++
 LD      = g++
 TEX	= xelatex
+BIBTEX	= bibtex
 CXXFLAGS  += -std=gnu++14 -Wall -ggdb -MMD -O1
 CXXFLAGS  += -fsanitize=undefined -fsanitize=address
 CXXFLAGS  += -iquote ./$(INCLUDE_DIR)
@@ -33,10 +34,14 @@ $(BINARY) : $(OBJS)
 run : $(BINARY)
 	@./$(BINARY)
 
-$(BUILD_DIR)/report.pdf : doc/report.tex
+$(BUILD_DIR)/report.pdf : doc/report.tex doc/report.bib
+	@mkdir -p $(dir $@)
+	@cp doc/report.bib $(BUILD_DIR)
 	@echo + [TEX] $@
-	@$(TEX) -output-directory=$(BUILD_DIR) $<
-	@$(TEX) -output-directory=$(BUILD_DIR) $<
+	@cd doc && $(TEX) -output-directory=../$(BUILD_DIR) report.tex
+	@cd $(BUILD_DIR) && $(BIBTEX) report
+	@cd doc && $(TEX) -output-directory=../$(BUILD_DIR) report.tex
+	@cd doc && $(TEX) -output-directory=../$(BUILD_DIR) report.tex
 
 doc : $(BUILD_DIR)/report.pdf
 	cp $< .
@@ -45,4 +50,5 @@ clean :
 	@echo - [RM] $(BUILD_DIR)
 	@rm -rf $(BUILD_DIR)
 
+.DELETE_ON_ERROR : $(BUILD_DIR)/report.pdf 
 

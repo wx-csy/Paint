@@ -34,7 +34,7 @@ namespace Paint {
     public:
         virtual RGBColor getPixel(int x, int y) const = 0;
         virtual void setPixel(int x, int y, RGBColor color) = 0;
-        virtual void reset(size_t width, size_t height) = 0;
+        virtual void reset(std::size_t width, std::size_t height) = 0;
         virtual void clear(RGBColor color = Colors::white) {
             for (size_t x = 0; x < width; x++)
                 for (size_t y = 0; y < height; y++) 
@@ -85,9 +85,9 @@ namespace Paint {
     class Element {
     protected:
         RGBColor color;
+        Element(RGBColor color) : color(color) {}
 
     public:
-        Element(RGBColor color = RGBColor()) : color(color) {}
         virtual void paint(Canvas& canvas) = 0;
         virtual void translate(float dx, float dy) = 0;
         virtual void rotate(float x, float y, float rdeg) = 0;
@@ -106,8 +106,7 @@ namespace Paint {
 
     public:
         Line(float x1, float y1, float x2, float y2, 
-                RGBColor color = RGBColor(),
-                LineDrawingAlgorithm algo = LineDrawingAlgorithm::DDA) :
+                RGBColor color, LineDrawingAlgorithm algo) :
             Element(color), x1(x1), y1(y1), x2(x2), y2(y2), algo(algo) {};
                 
         void paint(Canvas& canvas) override;
@@ -136,8 +135,7 @@ namespace Paint {
          
     public:
         Polygon(std::vector<std::pair<float, float>> points,
-                RGBColor color = RGBColor(), 
-                LineDrawingAlgorithm algo = LineDrawingAlgorithm::DDA) :
+                RGBColor color, LineDrawingAlgorithm algo) :
             Element(color), points(std::move(points)), algo(algo) {}
              
         void paint(Canvas& canvas) override;
@@ -164,8 +162,7 @@ namespace Paint {
         float x, y, rx, ry; 
          
     public:
-        Ellipse(float x, float y, float rx, float ry,
-                RGBColor color = RGBColor()) :
+        Ellipse(float x, float y, float rx, float ry, RGBColor color) :
             Element(color), x(x), y(y), rx(rx), ry(ry) {}
              
         void paint(Canvas& canvas) override;

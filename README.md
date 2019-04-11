@@ -18,7 +18,7 @@
 - [x] translate
   - [x] Line
   - [x] Polygon
-  - [ ] Ellipse
+  - [x] Ellipse
   - [ ] Curve
 - [ ] rotate
   - [ ] Line
