@@ -43,13 +43,19 @@ This software is developed, compiled and tested on the following platform:
 
 ## Build
 
-To build the software, simply type
+To build the software, type
 
 ```bash
 make
 ```
 
 The target executable is  `build/painter`.
+
+To generate document (report), type
+
+```bash
+make doc
+```
 
 ##  License
 
