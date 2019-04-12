@@ -42,24 +42,24 @@ static void DrawLine_Bresenham(Paint::Canvas& canvas, Paint::RGBColor color,
         if (ix1 > ix2) { swap(ix1, ix2); swap(iy1, iy2); }
         if (iy1 > iy2) { iy1 = -iy1; iy2 = -iy2; negate = true; }
         int dx = ix2 - ix1, dy = iy2 - iy1;
-        long long f = 0;
+        long long f = -dx;
         canvas.setPixel(ix1, negate ? -iy1 : iy1, color);
         for (int x = ix1, y = iy1; x < ix2; x++) {
-            f += dy + dy - dx;
             if (f >= 0) { y++; f -= dx; } else { f += dx; }
             canvas.setPixel(x, negate ? -y : y, color);
+            f += dy + dy - dx;
         }
     } else {
         bool negate = false;
         if (iy1 > iy2) { swap(ix1, ix2); swap(iy1, iy2); }
         if (ix1 > ix2) { ix1 = -ix1; ix2 = -ix2; negate = true; }
         int dy = iy2 - iy1, dx = ix2 - ix1;
-        long long f = 0;
+        long long f = -dx;
         canvas.setPixel(negate ? -ix1 : ix1, iy1, color);
         for (int y = iy1, x = ix1; y < iy2; y++) { 
-            f += dx + dx - dy;
             if (f >= 0) { x++; f -= dy; } else { f += dy; }
             canvas.setPixel(negate ? -x : x, y, color);
+            f += dx + dx - dy;
         }
     }
 }
