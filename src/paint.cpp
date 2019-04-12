@@ -8,6 +8,32 @@ using std::abs;
 using std::swap;            // from <utility>
 using util::limit_range;
 
+// degree is given clockwise
+static inline void init_rotate_matrix(float deg, float mat[2][2]) {
+    float rad = std::fmod(deg, 360.0f) / 180.0f * std::acos(-1.0f);
+    mat[0][0] = std::cos(rad);  mat[0][1] = -std::sin(rad);
+    mat[1][0] = -mat[0][1];     mat[1][1] = mat[0][0];
+}
+
+template <size_t N>
+static inline void matrix_transform(float mat[N][N], float point[N]) {
+    float res[N] = {};
+    for (size_t i = 0; i < N; i++)
+        for (size_t j = 0; j < N; j++)
+            res[i] += mat[i][j] * point[j];
+    for (size_t i = 0; i < N; i++)
+        point[i] = res[i];
+}
+
+static inline std::pair<float, float> rel_mat_apply
+        (float cx, float cy, float x, float y, float mat[2][2]) {
+    std::cout << cx << ' ' << cy << ' ' << x << ' ' << y << std::endl;
+    float point[2] = {x - cx, y - cy};
+    matrix_transform(mat, point);
+    std::cout << point[0] + cx << ' ' << point[1] + cy << std::endl;
+    return std::make_pair(point[0] + cx, point[1] + cy);
+}
+
 static void DrawLine_DDA(Paint::Canvas& canvas, Paint::RGBColor color,
         float x1, float y1, float x2, float y2) {
     int ix1 = limit_range(x1, Paint::MIN_COORDINATE, Paint::MAX_COORDINATE), 
@@ -120,6 +146,13 @@ namespace Paint {
             throw std::invalid_argument("unknown algorithm"); 
         }
     }
+    
+    void Line::rotate(float x, float y, float rdeg) {
+        float mat[2][2];
+        init_rotate_matrix(rdeg, mat);
+        std::tie(x1, y1) = rel_mat_apply(x, y, x1, y1, mat);
+        std::tie(x2, y2) = rel_mat_apply(x, y, x2, y2, mat);
+    }
 
     void Line::clip(float x1, float y1, float x2, float y2, 
             LineClippingAlgorithm algo) {
@@ -130,6 +163,9 @@ namespace Paint {
     // class Polygon : public Element
     //
     void Polygon::paint(Canvas& canvas) {
+        for (auto p : points) {
+            std::cout << p.first << ' ' << p.second << std::endl;
+        }
         switch (algo) {
         case LineDrawingAlgorithm::DDA :
             for (size_t i = 1; i < points.size(); i++)
@@ -156,10 +192,19 @@ namespace Paint {
         }
     }
     
+    void Polygon::rotate(float x, float y, float rdeg) {
+        float mat[2][2];
+        init_rotate_matrix(rdeg, mat);
+        for (auto& p : points) 
+            std::tie(p.first, p.second) = 
+                rel_mat_apply(x, y, p.first, p.second, mat);
+    }
+    
     //
     // class Ellipse : public Element
     //
     void Ellipse::paint(Canvas& canvas) {
         DrawEllipse_Midpoint(canvas, color, x, y, rx, ry);    
     }
+    
 }

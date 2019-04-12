@@ -33,23 +33,23 @@
 - [ ] clip (line)
 
 
-## Environment
-
-This software is developed, compiled and tested on the following platform:
-
-- OS: Ubuntu 18.04.2 LTS
-- C++ Compiler: g++ 7.3.0
-- make: GNU Make 4.1
-
 ## Build
 
-To build the software, type
+Softwares used to compile and run: 
+
+- OS: Ubuntu 18.04.2 LTS
+- C++ compiler: g++ 7.3.0
+- make: GNU Make 4.1
+- typesetting engine: XeTeX 3.14159265-2.6-0.99998
+- reference management software: BibTeX 0.99d
+
+To build binary executable, type
 
 ```bash
 make
 ```
 
-The target executable is  `build/painter`.
+The target file is `build/painter`.
 
 To generate document (report), type
 

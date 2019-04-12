@@ -23,14 +23,23 @@ static const std::unordered_map<std::string,
 };
 static int line = 0;
 
+static bool batch_readline(std::string& str) {
+    size_t pos;
+    if (std::getline(std::cin, str).fail()) return false;
+    pos = str.find('#');
+    if (pos != std::string::npos) str.resize(pos);
+    line++;
+    return true;
+}
+
 using CommandHandler = void (*)(std::vector<std::string>& args);
 
 static void resetCanvas(std::vector<std::string>& args) {
     if (args.size() != 3) 
         throw std::invalid_argument("invalid argument number");
-    std::size_t width = limit_range<std::size_t>(from_string(args[1]), 
+    size_t width = limit_range<size_t>(from_string(args[1]), 
                     0, Paint::MAX_COORDINATE),
-                height = limit_range<std::size_t>(from_string(args[2]),
+                height = limit_range<size_t>(from_string(args[2]),
                     0, Paint::MAX_COORDINATE);
     canvas.reset(width, height);
 }
@@ -47,9 +56,9 @@ static void saveCanvas(std::vector<std::string>& args) {
 static void setColor(std::vector<std::string>& args) {
     if (args.size() != 4)
         throw std::invalid_argument("invalid argument number");
-    std::uint8_t red = limit_range<std::uint8_t>(from_string(args[1])),
-                 green = limit_range<std::uint8_t>(from_string(args[2])),
-                 blue = limit_range<std::uint8_t>(from_string(args[3]));
+    uint8_t red = limit_range<uint8_t>(from_string(args[1])),
+                 green = limit_range<uint8_t>(from_string(args[2])),
+                 blue = limit_range<uint8_t>(from_string(args[3]));
     forecolor = Paint::RGBColor(red, green, blue);
 }
 
@@ -70,11 +79,11 @@ static void drawPolygon(std::vector<std::string>& args) {
     if (args.size() != 4) 
         throw std::invalid_argument("invalid argument number");
     int id = from_string(args[1]);
-    std::size_t nr_point = 
-        limit_range<std::size_t>(from_string(args[2]), 2, 1000000);
+    size_t nr_point = 
+        limit_range<size_t>(from_string(args[2]), 2, 1000000);
     std::string str;
     Paint::LineDrawingAlgorithm algo = ldalg.at(args[3]);
-    if (std::getline(std::cin, str).fail())
+    if (!batch_readline(str))
         throw std::invalid_argument("points of polygon expected");
     line++;
     std::vector<std::string> points_str = util::split(str);
@@ -108,7 +117,14 @@ static void translate(std::vector<std::string>& args) {
     elems.at(id)->translate(dx, dy);
 }
 
-static void comment(std::vector<std::string>& args) {}
+static void rotate(std::vector<std::string>& args) {
+    if (args.size() != 5) 
+        throw std::invalid_argument("invalid argument number");
+    int id = from_string(args[1]);
+    float cx = from_string<float>(args[2]), cy = from_string<float>(args[3]);
+    float rdeg = from_string<float>(args[4]);
+    elems.at(id)->rotate(cx, cy, rdeg);
+}
 
 static const std::unordered_map<std::string, CommandHandler> handler {
     { "resetCanvas",    resetCanvas     },
@@ -118,12 +134,12 @@ static const std::unordered_map<std::string, CommandHandler> handler {
     { "drawPolygon",    drawPolygon     },
     { "drawEllipse",    drawEllipse     },
     { "translate",      translate       },
-    { "#",              comment         },
+    { "rotate",         rotate          },
 };
 
 void batch() {
     std::string command;
-    while (std::getline(std::cin, command)) {
+    while (batch_readline(command)) {
         line++;
         std::vector<std::string> tokens = util::split(command);
         if (tokens.empty()) continue;

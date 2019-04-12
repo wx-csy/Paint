@@ -3,8 +3,20 @@ resetCanvas 800 800
 # drawLine 1 10 10 200 300 Bresenham
 setColor 250 0 0
 # drawLine 2 20 30 40 50 DDA
+
+drawLine 100 0 100 800 100 DDA
+drawLine 101 0 200 800 200 DDA
+drawLine 102 0 300 800 300 DDA
+
+drawLine 200 100 800 100 0 DDA
+drawLine 201 200 800 200 0 DDA
+drawLine 202 300 800 300 0 DDA
+
+drawEllipse 10 300 300 10 10
 drawPolygon 3 4 Bresenham
 222 222 222 444 423 448 475 129
+saveCanvas test.bmp
+rotate 3 300 300 90
 translate 3 -100 -100
 drawEllipse 4 150 150 30 100
 drawEllipse 5 500 500 80 40
