@@ -20,9 +20,9 @@
   - [x] Polygon
   - [x] Ellipse
   - [ ] Curve
-- [ ] rotate
-  - [ ] Line
-  - [ ] Polygon
+- [x] rotate
+  - [x] Line
+  - [x] Polygon
   - [ ] Ellipse
   - [ ] Curve
 - [ ] scale
@@ -31,7 +31,8 @@
   - [ ] Ellipse
   - [ ] Curve
 - [ ] clip (line)
-
+  - [ ] Cohen-Sutherland
+  - [ ] Liang-Barsky
 
 ## Build
 

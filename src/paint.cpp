@@ -45,10 +45,8 @@ static inline void matrix_transform(float mat[N][N], float point[N]) {
 
 static inline std::pair<float, float> rel_mat_apply
         (float cx, float cy, float x, float y, float mat[2][2]) {
-    std::cout << cx << ' ' << cy << ' ' << x << ' ' << y << std::endl;
     float point[2] = {x - cx, y - cy};
     matrix_transform(mat, point);
-    std::cout << point[0] + cx << ' ' << point[1] + cy << std::endl;
     return std::make_pair(point[0] + cx, point[1] + cy);
 }
 
