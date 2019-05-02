@@ -19,12 +19,12 @@
   - [x] Line
   - [x] Polygon
   - [x] Ellipse
-  - [ ] Curve
+  - [x] Curve
 - [x] rotate
   - [x] Line
   - [x] Polygon
   - [ ] Ellipse
-  - [ ] Curve
+  - [x] Curve
 - [x] scale
   - [x] Line
   - [x] Polygon

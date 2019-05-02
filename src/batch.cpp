@@ -58,7 +58,7 @@ static void resetCanvas(std::vector<std::string>& args) {
         throw std::invalid_argument("invalid argument number");
     size_t width = limit_range<size_t>(from_string(args[1]), 
                     0, Paint::MAX_COORDINATE),
-                height = limit_range<size_t>(from_string(args[2]),
+           height = limit_range<size_t>(from_string(args[2]),
                     0, Paint::MAX_COORDINATE);
     canvas.reset(width, height);
 }
@@ -76,8 +76,8 @@ static void setColor(std::vector<std::string>& args) {
     if (args.size() != 4)
         throw std::invalid_argument("invalid argument number");
     uint8_t red = limit_range<uint8_t>(from_string(args[1])),
-                 green = limit_range<uint8_t>(from_string(args[2])),
-                 blue = limit_range<uint8_t>(from_string(args[3]));
+            green = limit_range<uint8_t>(from_string(args[2])),
+            blue = limit_range<uint8_t>(from_string(args[3]));
     forecolor = Paint::RGBColor(red, green, blue);
 }
 
@@ -145,6 +145,15 @@ static void rotate(std::vector<std::string>& args) {
     elems.at(id)->rotate(cx, cy, rdeg);
 }
 
+static void scale(std::vector<std::string>& args) {
+    if (args.size() != 5)
+        throw std::invalid_argument("invalid argument number");
+    int id = from_string(args[1]);
+    float cx = from_string<float>(args[2]), cy = from_string<float>(args[3]);
+    float s = from_string<float>(args[4]);
+    elems.at(id)->scale(cx, cy, s);
+}
+
 static const std::unordered_map<std::string, CommandHandler> handler {
     { "resetCanvas",    resetCanvas     },
     { "saveCanvas",     saveCanvas      },
@@ -154,6 +163,7 @@ static const std::unordered_map<std::string, CommandHandler> handler {
     { "drawEllipse",    drawEllipse     },
     { "translate",      translate       },
     { "rotate",         rotate          },
+    { "scale",          scale           },
 };
 
 void batch() {

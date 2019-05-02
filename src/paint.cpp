@@ -189,9 +189,6 @@ namespace Paint {
     // class Polygon : public Element
     //
     void Polygon::paint(Canvas& canvas) {
-        for (auto p : points) {
-            std::cout << p.first << ' ' << p.second << std::endl;
-        }
         switch (algo) {
         case LineDrawingAlgorithm::DDA :
             for (size_t i = 1; i < points.size(); i++)
