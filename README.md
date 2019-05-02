@@ -25,11 +25,11 @@
   - [x] Polygon
   - [ ] Ellipse
   - [ ] Curve
-- [ ] scale
-  - [ ] Line
-  - [ ] Polygon
-  - [ ] Ellipse
-  - [ ] Curve
+- [x] scale
+  - [x] Line
+  - [x] Polygon
+  - [x] Ellipse
+  - [x] Curve
 - [ ] clip (line)
   - [ ] Cohen-Sutherland
   - [ ] Liang-Barsky

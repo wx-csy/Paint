@@ -128,7 +128,7 @@ namespace LibBmp {
         BmpCanvas(std::size_t width = 800, std::size_t height = 600) :
             Canvas(width, height), bmpimg(width, height) { }
         
-        Paint::RGBColor getPixel(int x, int y) const override {
+        Paint::RGBColor getPixel(ssize_t x, ssize_t y) const override {
             if (x < 0 || y < 0 || 
                 std::size_t(x) >= width || std::size_t(y) >= height)
                 throw std::range_error("pixel out of range");
@@ -138,7 +138,7 @@ namespace LibBmp {
             return Paint::RGBColor(r, g, b);
         }
         
-        void setPixel(int x, int y, Paint::RGBColor color) override {
+        void setPixel(ssize_t x, ssize_t y, Paint::RGBColor color) override {
             if (x < 0 || y < 0 || 
                 std::size_t(x) >= width || std::size_t(y) >= height)
                 return;

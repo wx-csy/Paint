@@ -32,9 +32,9 @@ namespace Paint {
     struct RGBColor { 
         uint8_t red, green, blue;
 
-        constexpr RGBColor(uint8_t red = 0, 
+        explicit constexpr RGBColor(uint8_t red = 0,
                  uint8_t green = 0, 
-                 uint8_t blue = 0) :
+                 uint8_t blue = 0) noexcept :
             red(red), green(green), blue(blue) { }
     };
 
@@ -50,8 +50,8 @@ namespace Paint {
             width(width), height(height) { }
 
     public:
-        virtual RGBColor getPixel(int x, int y) const = 0;
-        virtual void setPixel(int x, int y, RGBColor color) = 0;
+        virtual RGBColor getPixel(ssize_t x, ssize_t y) const = 0;
+        virtual void setPixel(ssize_t x, ssize_t y, RGBColor color) = 0;
         virtual void reset(size_t width, size_t height) = 0;
         virtual void clear(RGBColor color = Colors::white) {
             for (size_t x = 0; x < width; x++)
@@ -66,7 +66,7 @@ namespace Paint {
         std::vector<RGBColor> data;
 
     public:
-        MemoryCanvas(size_t width = 800, size_t height = 600) : 
+        explicit MemoryCanvas(size_t width = 800, size_t height = 600) :
             Canvas(width, height), data(width * height)
         { }
         
@@ -75,14 +75,14 @@ namespace Paint {
         MemoryCanvas& operator = (const MemoryCanvas& other) = delete;
         MemoryCanvas& operator = (MemoryCanvas&& other) = delete;
         
-        RGBColor getPixel(int x, int y) const override {
+        RGBColor getPixel(ssize_t x, ssize_t y) const override {
             if (x < 0 || y < 0 || 
                 size_t(x) >= width || size_t(y) >= height) 
                 throw std::range_error("pixel out of canvas");
             return data[width * y + x];
         }
         
-        void setPixel(int x, int y, RGBColor color) override {
+        void setPixel(ssize_t x, ssize_t y, RGBColor color) override {
             if (x < 0 || y < 0 || 
                 size_t(x) >= width || size_t(y) >= height) 
                 return;
@@ -93,7 +93,7 @@ namespace Paint {
             std::fill(data.begin(), data.end(), color);
         }
 
-        void reset(size_t width, size_t height) {
+        void reset(size_t width, size_t height) override {
             this->width = width;
             this->height = height;
             data.assign(width * height, RGBColor());
@@ -103,7 +103,7 @@ namespace Paint {
     class Element {
     protected:
         RGBColor color;
-        Element(RGBColor color) : color(color) {}
+        explicit Element(RGBColor color) : color(color) {}
 
     public:
         virtual void paint(Canvas& canvas) = 0;
@@ -136,9 +136,7 @@ namespace Paint {
 
         void rotate(float x, float y, float rdeg) override;
 
-        void scale(float x, float y, float s) override {
-            throw std::runtime_error("not implemented");
-        }
+        void scale(float x, float y, float s) override;
 
         void clip(float x1, float y1, float x2, float y2, 
                 LineClippingAlgorithm algo);
@@ -165,10 +163,7 @@ namespace Paint {
 
         void rotate(float x, float y, float rdeg) override;
         
-        void scale(float x, float y, float s) override {
-            throw std::runtime_error("not implemented");
-        }
-
+        void scale(float x, float y, float s) override;
     };
     
     class Ellipse : public Element {
@@ -190,10 +185,31 @@ namespace Paint {
             throw std::runtime_error("not implemented");   
         }
         
-        void scale(float x, float y, float s) override {
-            throw std::runtime_error("not implemented");
-        }
+        void scale(float x, float y, float s) override;
 
+    };
+
+    class Curve : public Element {
+    private:
+        std::vector<std::pair<float, float>> points;
+        CurveDrawingAlgorithm algo;
+
+    public:
+        Curve(std::vector<std::pair<float, float>> points,
+                RGBColor color, CurveDrawingAlgorithm algo) :
+            Element(color), points(std::move(points)), algo(algo) { }
+
+        void paint(Canvas& canvas) override;
+
+        void translate(float dx, float dy) override {
+            for (auto& p : points) {
+                p.first += dx;
+                p.second += dy;
+            }
+        }
+        void rotate(float x, float y, float rdeg) override;
+        
+        void scale(float x, float y, float s) override;
     };
 }
 

@@ -50,6 +50,11 @@ static inline std::pair<float, float> rel_mat_apply
     return std::make_pair(point[0] + cx, point[1] + cy);
 }
 
+static inline std::pair<float, float> rel_scale
+        (float cx, float cy, float x, float y, float s) {
+    return std::make_pair((x - cx) * s + cx, (y - cy) * s + cy);
+}
+
 static void DrawLine_DDA(Paint::Canvas& canvas, Paint::RGBColor color,
         float x1, float y1, float x2, float y2) {
     int ix1 = limit_range(x1, Paint::MIN_COORDINATE, Paint::MAX_COORDINATE), 
@@ -169,6 +174,11 @@ namespace Paint {
         std::tie(x1, y1) = rel_mat_apply(x, y, x1, y1, mat);
         std::tie(x2, y2) = rel_mat_apply(x, y, x2, y2, mat);
     }
+    
+    void Line::scale(float x, float y, float s) {
+        std::tie(x1, y1) = rel_scale(x, y, x1, y1, s);
+        std::tie(x2, y2) = rel_scale(x, y, x2, y2, s);
+    }
 
     void Line::clip(float x1, float y1, float x2, float y2, 
             LineClippingAlgorithm algo) {
@@ -212,8 +222,12 @@ namespace Paint {
         float mat[2][2];
         init_rotate_matrix(rdeg, mat);
         for (auto& p : points) 
-            std::tie(p.first, p.second) = 
-                rel_mat_apply(x, y, p.first, p.second, mat);
+            p = rel_mat_apply(x, y, p.first, p.second, mat);
+    }
+
+    void Polygon::scale(float x, float y, float s) {
+        for (auto& p : points)
+            p = rel_scale(x, y, p.first, p.second, s);
     }
     
     //
@@ -222,5 +236,29 @@ namespace Paint {
     void Ellipse::paint(Canvas& canvas) {
         DrawEllipse_Midpoint(canvas, color, x, y, rx, ry);    
     }
-    
+
+    void Ellipse::scale(float x, float y, float s) {
+        std::tie(this->x, this->y) = rel_scale(x, y, this->x, this->y, s);
+        rx *= s; ry *= s;
+    }
+
+    //
+    // class Curve : public Element
+    //
+    void Curve::paint(Canvas& canvas) {
+        throw std::runtime_error("not implemented");
+    }
+
+    void Curve::rotate(float x, float y, float rdeg) {
+        float mat[2][2];
+        init_rotate_matrix(rdeg, mat);
+        for (auto& p : points) 
+            std::tie(p.first, p.second) = 
+                rel_mat_apply(x, y, p.first, p.second, mat);
+    }
+
+    void Curve::scale(float x, float y, float s) {
+        for (auto& p : points)
+            p = rel_scale(x, y, p.first, p.second, s);
+    }
 }
