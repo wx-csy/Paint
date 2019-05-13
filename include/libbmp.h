@@ -125,7 +125,7 @@ namespace LibBmp {
         BmpImg bmpimg;
     
     public:
-        BmpCanvas(std::size_t width = 800, std::size_t height = 600) :
+        explicit BmpCanvas(std::size_t width = 800, std::size_t height = 600) :
             Canvas(width, height), bmpimg(width, height) { }
         
         Paint::RGBColor getPixel(ssize_t x, ssize_t y) const override {

@@ -13,7 +13,7 @@
 - [x] drawEllipse
   - [x] Mid-point
 - [ ] drawCurve
-  - [ ] Bezier
+  - [x] Bezier
   - [ ] B-spline
 - [x] translate
   - [x] Line

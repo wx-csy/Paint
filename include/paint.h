@@ -20,6 +20,7 @@
 #define __PAINT_H__
 
 #include <cstdint>
+#include <cmath>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -38,6 +39,26 @@ namespace Paint {
             red(red), green(green), blue(blue) { }
     };
 
+    template <typename T>
+    struct Point {
+        T x, y;
+        explicit constexpr Point(T x = T(), T y = T()) noexcept : x(x), y(y) {}
+        Point operator + (Point rhs) const { return Point(x + rhs.x, y + rhs.y); }
+        Point operator - (Point rhs) const { return Point(x - rhs.x, y - rhs.y); }
+        Point operator - () const { return Point(-x, -y); }
+        Point operator * (T k) const { return Point(x * k, y * k); }
+        friend Point operator * (T k, Point pt) { return Point(k * pt.x, k * pt.y); }
+        Point& operator += (Point rhs) { x += rhs.x; y += rhs.y; return *this; }
+        Point& operator -= (Point rhs) { x -= rhs.x; y -= rhs.y; return *this; }
+        Point& operator *= (T k) { x *= k; y *= k; return *this; }
+        T lmax() { return std::max(std::abs(x), std::abs(y)); }
+    };
+
+    typedef Point<int> PointI;
+    typedef Point<float> PointF;
+
+    inline PointI pf2pi(PointF pt) { return PointI(std::lround(pt.x), std::lround(pt.y)); }
+
     namespace Colors {
         constexpr RGBColor black(0, 0, 0);
         constexpr RGBColor white(255, 255, 255); 
@@ -51,9 +72,15 @@ namespace Paint {
 
     public:
         virtual RGBColor getPixel(ssize_t x, ssize_t y) const = 0;
+        RGBColor getPixel(PointI pt) const {
+            return getPixel(pt.x, pt.y);
+        }
         virtual void setPixel(ssize_t x, ssize_t y, RGBColor color) = 0;
+        void setPixel(PointI pt, RGBColor color) {
+            setPixel(pt.x, pt.y, color);
+        }
         virtual void reset(size_t width, size_t height) = 0;
-        virtual void clear(RGBColor color = Colors::white) {
+        virtual void clear(RGBColor color) {
             for (size_t x = 0; x < width; x++)
                 for (size_t y = 0; y < height; y++) 
                     setPixel(x, y, color);
@@ -89,7 +116,7 @@ namespace Paint {
             data[width * y + x] = color;
         }
         
-        void clear(RGBColor color = Colors::white) override {
+        void clear(RGBColor color) override {
             std::fill(data.begin(), data.end(), color);
         }
 
@@ -190,26 +217,36 @@ namespace Paint {
     };
 
     class Curve : public Element {
-    private:
-        std::vector<std::pair<float, float>> points;
-        CurveDrawingAlgorithm algo;
+    protected:
+        std::vector<PointF> points;
 
-    public:
-        Curve(std::vector<std::pair<float, float>> points,
-                RGBColor color, CurveDrawingAlgorithm algo) :
-            Element(color), points(std::move(points)), algo(algo) { }
 
-        void paint(Canvas& canvas) override;
+        Curve(std::vector<PointF> points, RGBColor color) :
+            Element(color), points(std::move(points)) { }
+
+        void paint(Canvas& canvas) override = 0;
 
         void translate(float dx, float dy) override {
             for (auto& p : points) {
-                p.first += dx;
-                p.second += dy;
+                p.x += dx;
+                p.y += dy;
             }
         }
+
         void rotate(float x, float y, float rdeg) override;
         
         void scale(float x, float y, float s) override;
+
+    };
+
+    class BezierCurve : public Curve {
+    private:
+        PointF eval(float t);
+
+    public:
+        BezierCurve(std::vector<PointF> points, RGBColor color) :
+            Curve(std::move(points), color) { }
+        void paint(Canvas& canvas) override;
     };
 }
 

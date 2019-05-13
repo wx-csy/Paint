@@ -21,6 +21,7 @@
 #include <stdexcept>
 #include "paint.h"
 #include "util.h"
+
 using std::lround;          // from <cmath>
 using std::abs; 
 using std::swap;            // from <utility>
@@ -151,6 +152,24 @@ static void DrawEllipse_Midpoint(Paint::Canvas& canvas, Paint::RGBColor color,
     }
 }
 
+template <typename T1, typename T2>
+static void draw_curve_recursive(float tl, float tr, Paint::PointF pl, Paint::PointF pr, T1&& fn, T2&& setpixel) {
+    if ((Paint::pf2pi(pl) - Paint::pf2pi(pr)).lmax() <= 1) return;
+    float tmid = (tl + tr) / 2.0f;
+    Paint::PointF pmid = fn(tmid);
+    draw_curve_recursive(tl, tmid, pl, pmid, fn, setpixel);
+    setpixel(lround(pmid.x), lround(pmid.y));
+    draw_curve_recursive(tmid, tr, pmid, pr, fn, setpixel);
+}
+
+template <typename T1, typename T2>
+static void draw_curve_recursive_wrapper(float tl, float tr, T1&& fn, T2&& setpixel) {
+    Paint::PointF pl = fn(tl), pr = fn(tr);
+    setpixel((int)pl.x, (int)pl.y);
+    draw_curve_recursive(tl, tr, pl, pr, fn, setpixel);
+    setpixel((int)pr.x, (int)pr.y);
+}
+
 namespace Paint {
     //
     // class Line : public Element
@@ -250,12 +269,32 @@ namespace Paint {
         float mat[2][2];
         init_rotate_matrix(rdeg, mat);
         for (auto& p : points) 
-            std::tie(p.first, p.second) = 
-                rel_mat_apply(x, y, p.first, p.second, mat);
+            std::tie(p.x, p.y) =
+                rel_mat_apply(x, y, p.x, p.y, mat);
     }
 
     void Curve::scale(float x, float y, float s) {
         for (auto& p : points)
-            p = rel_scale(x, y, p.first, p.second, s);
+            std::tie(p.x, p.y) = rel_scale(x, y, p.x, p.y, s);
+    }
+
+    //
+    // class BezierCurve : public Curve
+    //
+
+    PointF BezierCurve::eval(float t) {
+        std::vector<PointF> pts = points;
+        while (pts.size() > 1) {
+            for (size_t i = 0; i < pts.size() - 1; i++)
+                pts[i] = t * pts[i] + (1.0 - t) * pts[i+1];
+            pts.pop_back();
+        }
+        return pts[0];
+    }
+
+    void BezierCurve::paint(Paint::Canvas &canvas) {
+        draw_curve_recursive_wrapper(0.0f, 1.0f,
+            [this] (float t) { return eval(t); },
+            [&] (int x, int y) { canvas.setPixel(x, y, color); } );
     }
 }

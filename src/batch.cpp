@@ -16,7 +16,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include <vector>
 #include <string>
 #include <utility>
@@ -64,12 +63,13 @@ static void resetCanvas(std::vector<std::string>& args) {
 }
 
 static void saveCanvas(std::vector<std::string>& args) {
-    canvas.clear();
+    canvas.clear(Paint::Colors::white);
     if (args.size() != 2)
         throw std::invalid_argument("invalid argument number");
     for (auto& e : elems)
         e.second->paint(canvas);
     canvas.save(args[1]);
+    elems.clear();
 }
 
 static void setColor(std::vector<std::string>& args) {
@@ -128,6 +128,28 @@ static void drawEllipse(std::vector<std::string>& args) {
             "id " + std::to_string(id) + " already exists");
 }
 
+static void drawCurve(std::vector<std::string>& args) {
+    if (args.size() != 4)
+        throw std::invalid_argument("invalid argument number");
+    int id = from_string(args[1]);
+    size_t nr_point =
+        limit_range<size_t>(from_string(args[2]), 2, 1000000);
+    std::string str;
+    // Paint::LineDrawingAlgorithm algo = ldalg.at(args[3]);
+    if (!batch_readline(str))
+        throw std::invalid_argument("points of polygon expected");
+    line++;
+    std::vector<std::string> points_str = util::split(str);
+    if (points_str.size() != nr_point * 2)
+        throw std::invalid_argument("invalid number of coordinates");
+    std::vector<Paint::PointF> points;
+    for (size_t i = 0; i < nr_point; i++)
+        points.emplace_back(from_string<float>(points_str[i*2]),
+                            from_string<float>(points_str[i*2+1]));
+    if (!elems.emplace(id, new Paint::BezierCurve(points, forecolor)).second)
+        throw std::invalid_argument("id " + std::to_string(id) + " already exists");
+}
+
 static void translate(std::vector<std::string>& args) {
     if (args.size() != 4) 
         throw std::invalid_argument("invalid argument number");
@@ -161,6 +183,7 @@ static const std::unordered_map<std::string, CommandHandler> handler {
     { "drawLine",       drawLine        },
     { "drawPolygon",    drawPolygon     },
     { "drawEllipse",    drawEllipse     },
+    { "drawCurve",      drawCurve       },
     { "translate",      translate       },
     { "rotate",         rotate          },
     { "scale",          scale           },
