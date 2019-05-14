@@ -66,10 +66,8 @@ static void saveCanvas(std::vector<std::string>& args) {
     canvas.clear(Paint::Colors::white);
     if (args.size() != 2)
         throw std::invalid_argument("invalid argument number");
-    for (auto& e : elems)
-        e.second->paint(canvas);
+    for (auto& e : elems) e.second->paint(canvas);
     canvas.save(args[1]);
-    elems.clear();
 }
 
 static void setColor(std::vector<std::string>& args) {
@@ -104,7 +102,6 @@ static void drawPolygon(std::vector<std::string>& args) {
     Paint::LineDrawingAlgorithm algo = ldalg.at(args[3]);
     if (!batch_readline(str))
         throw std::invalid_argument("points of polygon expected");
-    line++;
     std::vector<std::string> points_str = util::split(str);
     if (points_str.size() != nr_point * 2)
         throw std::invalid_argument("invalid number of coordinates");
@@ -113,8 +110,7 @@ static void drawPolygon(std::vector<std::string>& args) {
         points.emplace_back(from_string<float>(points_str[i*2]),
                             from_string<float>(points_str[i*2+1]));
     if (!elems.emplace(id, new Paint::Polygon(points, forecolor, algo)).second)
-        throw std::invalid_argument(
-            "id " + std::to_string(id) + " already exists");
+        throw std::invalid_argument("id " + std::to_string(id) + " already exists");
 }
 
 static void drawEllipse(std::vector<std::string>& args) {
@@ -124,8 +120,7 @@ static void drawEllipse(std::vector<std::string>& args) {
     float x = from_string<float>(args[2]), y = from_string<float>(args[3]),
           rx = from_string<float>(args[4]), ry = from_string<float>(args[5]);
     if (!elems.emplace(id, new Paint::Ellipse(x, y, rx, ry, forecolor)).second)
-        throw std::invalid_argument(
-            "id " + std::to_string(id) + " already exists");
+        throw std::invalid_argument("id " + std::to_string(id) + " already exists");
 }
 
 static void drawCurve(std::vector<std::string>& args) {
@@ -137,8 +132,7 @@ static void drawCurve(std::vector<std::string>& args) {
     std::string str;
     // Paint::LineDrawingAlgorithm algo = ldalg.at(args[3]);
     if (!batch_readline(str))
-        throw std::invalid_argument("points of polygon expected");
-    line++;
+        throw std::invalid_argument("points of curve expected");
     std::vector<std::string> points_str = util::split(str);
     if (points_str.size() != nr_point * 2)
         throw std::invalid_argument("invalid number of coordinates");
@@ -192,7 +186,6 @@ static const std::unordered_map<std::string, CommandHandler> handler {
 void batch() {
     std::string command;
     while (batch_readline(command)) {
-        line++;
         std::vector<std::string> tokens = util::split(command);
         if (tokens.empty()) continue;
         try {

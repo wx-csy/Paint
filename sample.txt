@@ -1,7 +1,7 @@
 resetCanvas 100 100
 setColor 255 0 0
 drawLine 5 7 39 93 71 DDA
-saveCanvas output_1
+saveCanvas output_1.bmp
 setColor 0 162 232
 drawLine 233 96 35 15 58 DDA
 saveCanvas output_2.bmp
