@@ -146,27 +146,26 @@ namespace Paint {
 
     class Line : public Element {
     private:
-        float x1, y1, x2, y2;
+        PointF p1, p2;
         LineDrawingAlgorithm algo;
 
     public:
-        Line(float x1, float y1, float x2, float y2, 
-                RGBColor color, LineDrawingAlgorithm algo) :
-            Element(color), x1(x1), y1(y1), x2(x2), y2(y2), algo(algo) {};
+        Line(PointF p1, PointF p2, RGBColor color, LineDrawingAlgorithm algo) :
+            Element(color), p1(p1), p2(p2), algo(algo) {};
                 
         void paint(Canvas& canvas) override;
 
         void translate(float dx, float dy) override {
-            x1 += dx; y1 += dy;
-            x2 += dx; y2 += dy;
+            p1.x += dx; p1.y += dy;
+            p2.x += dx; p2.y += dy;
         }
 
         void rotate(float x, float y, float rdeg) override;
 
         void scale(float x, float y, float s) override;
 
-        void clip(float x1, float y1, float x2, float y2, 
-                LineClippingAlgorithm algo);
+        std::vector<Line> clip(float x1, float y1, float x2, float y2,
+                LineClippingAlgorithm algo) const;
     };
 
     class Polygon : public Element {

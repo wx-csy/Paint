@@ -86,8 +86,8 @@ static void drawLine(std::vector<std::string>& args) {
     float x1 = from_string<float>(args[2]), y1 = from_string<float>(args[3]),
           x2 = from_string<float>(args[4]), y2 = from_string<float>(args[5]);
     if (!elems.emplace(id, 
-            new Paint::Line(x1, y1, x2, y2, forecolor, 
-                ldalg.at(args[6]))).second) 
+            new Paint::Line(Paint::PointF(x1, y1), Paint::PointF(x2, y2),
+                forecolor, ldalg.at(args[6]))).second)
         throw std::invalid_argument(
             "id " + std::to_string(id) + " already exists");
 }

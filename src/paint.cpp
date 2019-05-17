@@ -177,10 +177,10 @@ namespace Paint {
     void Line::paint(Canvas& canvas) {
         switch (algo) {
         case LineDrawingAlgorithm::DDA :
-            DrawLine_DDA(canvas, color, x1, y1, x2, y2);
+            DrawLine_DDA(canvas, color, p1.x, p1.y, p2.x, p2.y);
             break;
         case LineDrawingAlgorithm::Bresenham :
-            DrawLine_Bresenham(canvas, color, x1, y1, x2, y2);
+            DrawLine_Bresenham(canvas, color, p1.x, p1.y, p2.x, p2.y);
             break;
         default:
             throw std::invalid_argument("unknown algorithm"); 
@@ -190,18 +190,13 @@ namespace Paint {
     void Line::rotate(float x, float y, float rdeg) {
         float mat[2][2];
         init_rotate_matrix(rdeg, mat);
-        std::tie(x1, y1) = rel_mat_apply(x, y, x1, y1, mat);
-        std::tie(x2, y2) = rel_mat_apply(x, y, x2, y2, mat);
+        std::tie(p1.x, p1.y) = rel_mat_apply(x, y, p1.x, p1.y, mat);
+        std::tie(p2.x, p2.y) = rel_mat_apply(x, y, p2.x, p2.y, mat);
     }
     
     void Line::scale(float x, float y, float s) {
-        std::tie(x1, y1) = rel_scale(x, y, x1, y1, s);
-        std::tie(x2, y2) = rel_scale(x, y, x2, y2, s);
-    }
-
-    void Line::clip(float x1, float y1, float x2, float y2, 
-            LineClippingAlgorithm algo) {
-        throw std::runtime_error("not implemented");
+        std::tie(p1.x, p1.y) = rel_scale(x, y, p1.x, p1.y, s);
+        std::tie(p2.x, p2.y) = rel_scale(x, y, p2.x, p2.y, s);
     }
 
     //
