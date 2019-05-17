@@ -256,9 +256,6 @@ namespace Paint {
     //
     // class Curve : public Element
     //
-    void Curve::paint(Canvas& canvas) {
-        throw std::runtime_error("not implemented");
-    }
 
     void Curve::rotate(float x, float y, float rdeg) {
         float mat[2][2];

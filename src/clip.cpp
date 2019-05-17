@@ -40,10 +40,10 @@ int __builtin_ctz(T val) {
 #endif
 
 enum {
-    XMIN_LEFT = 1,
-    XMAX_RIGHT = 2,
-    YMIN_DOWN = 3,
-    YMAX_UP = 4
+    XMIN_LEFT = 0,
+    XMAX_RIGHT = 1,
+    YMIN_DOWN = 2,
+    YMAX_UP = 3
 };
 
 static inline uint8_t cs_encode(Paint::PointF p, float xmin, float xmax, float ymin, float ymax) {
