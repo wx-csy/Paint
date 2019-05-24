@@ -11,7 +11,7 @@ TEX	= xelatex
 BIBTEX	= bibtex
 CXXFLAGS  += -std=gnu++14 -Wall -ggdb -MMD -O1
 CXXFLAGS  += -fsanitize=undefined -fsanitize=address
-CXXFLAGS  += -iquote ./$(INCLUDE_DIR)
+CXXFLAGS  += -I ./$(INCLUDE_DIR)
 LDFLAGS = $(CXXFLAGS)
 
 SRCS = $(shell find $(SRC_DIR)/ $(UI_DIR)/ -name "*.cpp")

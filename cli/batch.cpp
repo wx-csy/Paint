@@ -54,9 +54,8 @@ static const std::unordered_map<std::string,
 static int line = 0;
 
 static bool batch_readline(std::string& str) {
-    size_t pos;
     if (std::getline(std::cin, str).fail()) return false;
-    pos = str.find('#');
+    size_t pos = str.find('#');
     if (pos != std::string::npos) str.resize(pos);
     line++;
     return true;

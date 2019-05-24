@@ -38,14 +38,13 @@ namespace Paint {
 
         void paint() {
             for (auto& ps : primitives)
-                ps.second.paint(this);
+                ps.second->paint(static_cast<DeviceT&>(*this));
         }
 
         template <typename T>
         int add_primitive(T* primitive, int id = -1) {
-            if (id == -1)
-                id = primitives.empty() ? 0 :primitives.rbegin()->first + 1;
-            if (primitives.emplace(id, static_cast<Primitive*>(primitive)).second) id = -1;
+            if (id < 0) id = primitives.empty() ? 0 : primitives.rbegin()->first + 1;
+            if (!primitives.emplace(id, static_cast<Primitive*>(primitive)).second) id = -1;
             return id;
         }
 

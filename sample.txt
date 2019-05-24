@@ -5,7 +5,7 @@ saveCanvas output_1.bmp
 setColor 0 162 232
 drawLine 233 96 35 15 58 DDA
 saveCanvas output_2.bmp
-clip 5 33 10 70 58
+clip 5 33 10 70 58 Liang-Barsky
 saveCanvas output_3.bmp
 rotate 5 33 49 -90
 saveCanvas output_4.bmp
