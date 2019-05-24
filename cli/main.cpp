@@ -16,8 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <string>
-#include "common.h"
+void batch();
 
 int main(int argc, char *argv[]) {
     batch();

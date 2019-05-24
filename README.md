@@ -30,9 +30,9 @@
   - [x] Polygon
   - [x] Ellipse
   - [x] Curve
-- [ ] clip (line)
-  - [ ] Cohen-Sutherland
-  - [ ] Liang-Barsky
+- [x] clip (line)
+  - [x] Cohen-Sutherland
+  - [x] Liang-Barsky
 
 ## Build
 

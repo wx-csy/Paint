@@ -23,27 +23,34 @@
 #include <algorithm>
 #include <unordered_map>
 #include <memory>
-#include "paint.h"
-#include "libbmp.h"
-#include "util.h"
-#include "common.h"
+
+#include <paint/paint.h>
+#include <paint/canvas.h>
+#include <paint/primitive.h>
+#include <paint/util.h>
+#include <paint/common.h>
+
+#include <libbmp.h>
 
 using util::from_string;
 using util::limit_range;
 
-static LibBmp::BmpCanvas canvas;
+static Paint::Canvas<LibBmp::BmpDevice> canvas;
 static Paint::RGBColor forecolor;
-static std::unordered_map<int, std::unique_ptr<Paint::Element>> elems;
+
+
 static const std::unordered_map<std::string, 
-        Paint::LineDrawingAlgorithm> ldalg {
-    { "DDA",            Paint::LineDrawingAlgorithm::DDA            },
-    { "Bresenham",      Paint::LineDrawingAlgorithm::Bresenham      },
+        Paint::Line::Algorithm> ldalg {
+    { "DDA",            Paint::Line::Algorithm::DDA            },
+    { "Bresenham",      Paint::Line::Algorithm::Bresenham      },
 };
 static const std::unordered_map<std::string,
     Paint::LineClippingAlgorithm> clipalg {
     { "Cohen-Sutherland",   Paint::LineClippingAlgorithm::CohenSutherland   },
     { "Liang-Barsky",       Paint::LineClippingAlgorithm::LiangBarsky       },
 };
+
+
 static int line = 0;
 
 static bool batch_readline(std::string& str) {
@@ -68,10 +75,10 @@ static void resetCanvas(std::vector<std::string>& args) {
 }
 
 static void saveCanvas(std::vector<std::string>& args) {
-    canvas.clear(Paint::Colors::white);
     if (args.size() != 2)
         throw std::invalid_argument("invalid argument number");
-    for (auto& e : elems) e.second->paint(canvas);
+    canvas.clear(Paint::Colors::white);
+    canvas.paint();
     canvas.save(args[1]);
 }
 
@@ -90,7 +97,7 @@ static void drawLine(std::vector<std::string>& args) {
     int id = from_string(args[1]);
     float x1 = from_string<float>(args[2]), y1 = from_string<float>(args[3]),
           x2 = from_string<float>(args[4]), y2 = from_string<float>(args[5]);
-    if (!elems.emplace(id, 
+    if (!canvas.primitives.emplace(id,
             new Paint::Line(Paint::PointF(x1, y1), Paint::PointF(x2, y2),
                 forecolor, ldalg.at(args[6]))).second)
         throw std::invalid_argument(
@@ -104,7 +111,7 @@ static void drawPolygon(std::vector<std::string>& args) {
     size_t nr_point = 
         limit_range<size_t>(from_string(args[2]), 2, 1000000);
     std::string str;
-    Paint::LineDrawingAlgorithm algo = ldalg.at(args[3]);
+    Paint::Line::Algorithm algo = ldalg.at(args[3]);
     if (!batch_readline(str))
         throw std::invalid_argument("points of polygon expected");
     std::vector<std::string> points_str = util::split(str);
@@ -114,7 +121,7 @@ static void drawPolygon(std::vector<std::string>& args) {
     for (size_t i = 0; i < nr_point; i++) 
         points.emplace_back(from_string<float>(points_str[i*2]),
                             from_string<float>(points_str[i*2+1]));
-    if (!elems.emplace(id, new Paint::Polygon(points, forecolor, algo)).second)
+    if (canvas.add_primitive(new Paint::Polygon(points, forecolor, algo), id) < 0)
         throw std::invalid_argument("id " + std::to_string(id) + " already exists");
 }
 
@@ -124,7 +131,7 @@ static void drawEllipse(std::vector<std::string>& args) {
     int id = from_string(args[1]);
     float x = from_string<float>(args[2]), y = from_string<float>(args[3]),
           rx = from_string<float>(args[4]), ry = from_string<float>(args[5]);
-    if (!elems.emplace(id, new Paint::Ellipse(x, y, rx, ry, forecolor)).second)
+    if (canvas.add_primitive(new Paint::Ellipse(x, y, rx, ry, forecolor), id) < 0)
         throw std::invalid_argument("id " + std::to_string(id) + " already exists");
 }
 
@@ -145,7 +152,7 @@ static void drawCurve(std::vector<std::string>& args) {
     for (size_t i = 0; i < nr_point; i++)
         points.emplace_back(from_string<float>(points_str[i*2]),
                             from_string<float>(points_str[i*2+1]));
-    if (!elems.emplace(id, new Paint::BezierCurve(points, forecolor)).second)
+    if (canvas.add_primitive(new Paint::BezierCurve(points, forecolor), id) < 0)
         throw std::invalid_argument("id " + std::to_string(id) + " already exists");
 }
 
@@ -154,7 +161,7 @@ static void translate(std::vector<std::string>& args) {
         throw std::invalid_argument("invalid argument number");
     int id = from_string(args[1]);
     float dx = from_string<float>(args[2]), dy = from_string<float>(args[3]);
-    elems.at(id)->translate(dx, dy);
+    canvas[id].translate(dx, dy);
 }
 
 static void rotate(std::vector<std::string>& args) {
@@ -163,7 +170,7 @@ static void rotate(std::vector<std::string>& args) {
     int id = from_string(args[1]);
     float cx = from_string<float>(args[2]), cy = from_string<float>(args[3]);
     float rdeg = from_string<float>(args[4]);
-    elems.at(id)->rotate(cx, cy, rdeg);
+    canvas[id].rotate(cx, cy, rdeg);
 }
 
 static void scale(std::vector<std::string>& args) {
@@ -172,7 +179,7 @@ static void scale(std::vector<std::string>& args) {
     int id = from_string(args[1]);
     float cx = from_string<float>(args[2]), cy = from_string<float>(args[3]);
     float s = from_string<float>(args[4]);
-    elems.at(id)->scale(cx, cy, s);
+    canvas[id].scale(cx, cy, s);
 }
 
 static void clip(std::vector<std::string>& args) {
@@ -182,8 +189,7 @@ static void clip(std::vector<std::string>& args) {
     float x1 = from_string<float>(args[2]), y1 = from_string<float>(args[3]);
     float x2 = from_string<float>(args[4]), y2 = from_string<float>(args[5]);
     Paint::LineClippingAlgorithm algo = clipalg.at(args[6]);
-    auto& line = dynamic_cast<Paint::Line&>(*elems.at(id));
-    line.clip(x1, y1, x2, y2, algo);
+    dynamic_cast<Paint::Line&>(canvas[id]).clip(x1, y1, x2, y2, algo);
 }
 
 static const std::unordered_map<std::string, CommandHandler> handler {

@@ -1,6 +1,7 @@
 TARGET_NAME = painter
 BUILD_DIR     = build
 SRC_DIR       = src
+UI_DIR        = cli
 INCLUDE_DIR   = include
 BINARY  ?= $(BUILD_DIR)/$(TARGET_NAME)
 
@@ -13,13 +14,13 @@ CXXFLAGS  += -fsanitize=undefined -fsanitize=address
 CXXFLAGS  += -iquote ./$(INCLUDE_DIR)
 LDFLAGS = $(CXXFLAGS)
 
-SRCS = $(shell find $(SRC_DIR)/ -name "*.cpp")
-OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
+SRCS = $(shell find $(SRC_DIR)/ $(UI_DIR)/ -name "*.cpp")
+OBJS = $(SRCS:%.cpp=$(BUILD_DIR)/%.o)
 
 .DEFAULT_GOAL = $(BINARY)
 .PHONY : clean run doc
 
-$(BUILD_DIR)/%.o : $(SRC_DIR)/%.cpp
+$(BUILD_DIR)/%.o : %.cpp
 	@mkdir -p $(dir $@)
 	@echo + [CXX] $@
 	@$(CXX) $(CXXFLAGS) -c -o $@ $<

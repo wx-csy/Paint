@@ -26,7 +26,4 @@
 #include <sstream>
 #include <iostream>
 
-// run paint in batch mode
-void batch();
-
 #endif

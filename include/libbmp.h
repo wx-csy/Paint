@@ -24,7 +24,8 @@
 #include <string>
 #include <cstdint>
 #include <stdexcept>
-#include "paint.h"
+#include <paint/paint.h>
+#include <paint/device.h>
 
 namespace LibBmp {
 
@@ -120,13 +121,13 @@ namespace LibBmp {
             } header;
     };
     
-    class BmpCanvas : public Paint::Canvas {
+    class BmpDevice : public Paint::ImageDevice {
     private: 
         BmpImg bmpimg;
     
     public:
-        explicit BmpCanvas(std::size_t width = 800, std::size_t height = 600) :
-            Canvas(width, height), bmpimg(width, height) { }
+        explicit BmpDevice(std::size_t width = 800, std::size_t height = 600) :
+            Paint::ImageDevice(width, height), bmpimg(width, height) { }
         
         Paint::RGBColor getPixel(ssize_t x, ssize_t y) const override {
             if (x < 0 || y < 0 || 
@@ -145,13 +146,13 @@ namespace LibBmp {
             bmpimg.set_pixel(x, y, color.red, color.green, color.blue); 
         }
         
-        void reset(std::size_t width, std::size_t height) {
+        void reset(std::size_t width, std::size_t height) override {
             this->width = width;
             this->height = height;
             bmpimg = BmpImg(width, height); 
         }
 
-        void save(std::string filename) {
+        void save(const std::string& filename) {
             if (static_cast<int>(bmpimg.write(filename)) < 0)
                 throw std::runtime_error("cannot save to '" + filename + "'");
         }

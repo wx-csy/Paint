@@ -20,8 +20,9 @@
 #include <vector>
 #include <utility>
 #include <stdexcept>
-#include "paint.h"
-#include "util.h"
+#include "paint/paint.h"
+#include "paint/primitive.h"
+#include "paint/util.h"
 
 #ifndef __GNUC__
 template <typename T>
