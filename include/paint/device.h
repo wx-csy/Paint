@@ -36,7 +36,10 @@ namespace Paint {
         void setPixel(PointI pt, RGBColor color) {
             setPixel(pt.x, pt.y, color);
         }
-        virtual void reset(size_t width, size_t height) = 0;
+        virtual void reset(size_t width, size_t height) {
+            this->width = width;
+            this->height = height;
+        }
         virtual void clear(RGBColor color) {
             for (size_t x = 0; x < width; x++)
                 for (size_t y = 0; y < height; y++)
@@ -76,8 +79,7 @@ namespace Paint {
         }
 
         void reset(size_t width, size_t height) override {
-            this->width = width;
-            this->height = height;
+            ImageDevice::reset(width, height);
             data.assign(width * height, RGBColor());
         }
     };

@@ -147,8 +147,7 @@ namespace LibBmp {
         }
         
         void reset(std::size_t width, std::size_t height) override {
-            this->width = width;
-            this->height = height;
+            Paint::ImageDevice::reset(width, height);
             bmpimg = BmpImg(width, height); 
         }
 
