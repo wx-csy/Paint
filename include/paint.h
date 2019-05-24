@@ -164,8 +164,8 @@ namespace Paint {
 
         void scale(float x, float y, float s) override;
 
-        std::vector<Line> clip(float x1, float y1, float x2, float y2,
-                LineClippingAlgorithm algo) const;
+        void clip(float x1, float y1, float x2, float y2,
+                LineClippingAlgorithm algo);
     };
 
     class Polygon : public Element {
@@ -208,7 +208,7 @@ namespace Paint {
         }
 
         void rotate(float x, float y, float rdeg) override {
-            throw std::runtime_error("not implemented");   
+            throw std::runtime_error("not supported");
         }
         
         void scale(float x, float y, float s) override;

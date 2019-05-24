@@ -39,6 +39,11 @@ static const std::unordered_map<std::string,
     { "DDA",            Paint::LineDrawingAlgorithm::DDA            },
     { "Bresenham",      Paint::LineDrawingAlgorithm::Bresenham      },
 };
+static const std::unordered_map<std::string,
+    Paint::LineClippingAlgorithm> clipalg {
+    { "Cohen-Sutherland",   Paint::LineClippingAlgorithm::CohenSutherland   },
+    { "Liang-Barsky",       Paint::LineClippingAlgorithm::LiangBarsky       },
+};
 static int line = 0;
 
 static bool batch_readline(std::string& str) {
@@ -170,6 +175,17 @@ static void scale(std::vector<std::string>& args) {
     elems.at(id)->scale(cx, cy, s);
 }
 
+static void clip(std::vector<std::string>& args) {
+    if (args.size() != 7)
+        throw std::invalid_argument("invalid argument number");
+    int id = from_string(args[1]);
+    float x1 = from_string<float>(args[2]), y1 = from_string<float>(args[3]);
+    float x2 = from_string<float>(args[4]), y2 = from_string<float>(args[5]);
+    Paint::LineClippingAlgorithm algo = clipalg.at(args[6]);
+    auto& line = dynamic_cast<Paint::Line&>(*elems.at(id));
+    line.clip(x1, y1, x2, y2, algo);
+}
+
 static const std::unordered_map<std::string, CommandHandler> handler {
     { "resetCanvas",    resetCanvas     },
     { "saveCanvas",     saveCanvas      },
@@ -181,6 +197,7 @@ static const std::unordered_map<std::string, CommandHandler> handler {
     { "translate",      translate       },
     { "rotate",         rotate          },
     { "scale",          scale           },
+    { "clip",           clip            },
 };
 
 void batch() {
