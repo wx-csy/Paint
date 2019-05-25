@@ -45,6 +45,12 @@ namespace Paint {
                 for (size_t y = 0; y < height; y++)
                     setPixel(x, y, color);
         }
+        virtual void cloneFrom(const ImageDevice& another) {
+            reset(another.width, another.height);
+            for (size_t x = 0; x < width; x++)
+                for (size_t y = 0; y < width; y++)
+                    setPixel(x, y, another.getPixel(x, y));
+        }
         virtual ~ImageDevice() = default;
     };
 
