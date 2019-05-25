@@ -19,9 +19,11 @@
 #include <cmath>
 #include <utility>
 #include <stdexcept>
+#include <numeric>
 #include <paint/paint.h>
 #include <paint/primitive.h>
 #include <paint/util.h>
+#include <cassert>
 #include "algo.h"
 
 using std::lround;          // from <cmath>
@@ -102,28 +104,21 @@ namespace Paint {
     }
 
     //
-    // class Curve : public Element
+    // class ParametricCurve : public Element
     //
 
-    void Curve::rotate(float x, float y, float rdeg) {
-        float mat[2][2];
-        init_rotate_matrix(rdeg, mat);
-        for (auto& p : points) 
-            std::tie(p.x, p.y) =
-                rel_mat_apply(x, y, p.x, p.y, mat);
-    }
-
-    void Curve::scale(float x, float y, float s) {
-        for (auto& p : points)
-            std::tie(p.x, p.y) = rel_scale(x, y, p.x, p.y, s);
+    void ParametricCurve::paint(Paint::ImageDevice &device) {
+        draw_curve_recursive_wrapper(0.0f, 1.0f,
+            [this] (float t) { return eval(t); },
+            [&] (int x, int y) { device.setPixel(x, y, color); } );
     }
 
     //
-    // class BezierCurve : public Curve
+    // class Bezier : public ParametricCurve
     //
 
-    PointF BezierCurve::eval(float t) {
-        std::vector<PointF> pts = points;
+    PointF Bezier::eval(float t) {
+        std::vector<PointF> pts(points.begin(), points.end());
         while (pts.size() > 1) {
             for (size_t i = 0; i < pts.size() - 1; i++)
                 pts[i] = t * pts[i] + (1.0 - t) * pts[i+1];
@@ -132,9 +127,67 @@ namespace Paint {
         return pts[0];
     }
 
-    void BezierCurve::paint(ImageDevice& device) {
-        draw_curve_recursive_wrapper(0.0f, 1.0f,
-            [this] (float t) { return eval(t); },
-            [&] (int x, int y) { device.setPixel(x, y, color); } );
+    void Bezier::translate(float dx, float dy) {
+        for (auto& p : points) p += PointF(dx, dy);
     }
-}
+
+    void Bezier::rotate(float x, float y, float rdeg) {
+        float mat[2][2];
+        init_rotate_matrix(rdeg, mat);
+        for (auto& p : points)
+            std::tie(p.x, p.y) = rel_mat_apply(x, y, p.x, p.y, mat);
+    }
+
+    void Bezier::scale(float x, float y, float s) {
+        for (auto& p : points)
+            std::tie(p.x, p.y) = rel_scale(x, y, p.x, p.y, s);
+    }
+
+    //
+    // class BSpline : public ParametricCurve
+    //
+    BSpline::BSpline(std::vector<PointF> points, RGBColor color, size_t order) :
+            ParametricCurve(color), order(order), points(std::move(points)) {
+        if (points.size() <= order)
+            throw std::invalid_argument("number of points must be greater than order");
+        size_t nknot = this->points.size() + order;
+        knot.resize(nknot + 1);
+        for (size_t i = 0; i <= nknot; i++) knot[i] = 1.0f * i / nknot;
+        tl = float(order) / (order + this->points.size());
+        tr = 1.0f - tl;
+    }
+
+    PointF BSpline::eval(float t) {
+        t = tl + t * (tr - tl);
+        std::vector<float> w(knot.size() - 1);
+        for (size_t i = 0; i < knot.size() - 1; i++)
+            w[i] = (t >= knot[i] and t < knot[i+1] ? 1.0f : 0.0f);
+        if (t < knot.front()) w.front() = 1.0f;
+        if (t >= knot.back()) w.back() = 1.0f;
+        for (size_t r = 1; r <= order; r++) {
+            for (size_t i = 0; i < w.size() - 1; i++) {
+                w[i] =
+                    w[i] * (t - knot[i]) / (knot[i+r] - knot[i]) +
+                    w[i+1] * (knot[i+r+1] - t) / (knot[i+r+1] - knot[i+1]);
+            }
+            w.pop_back();
+        }
+        return inner_product(w.begin(), w.end(), points.begin(), PointF());
+    }
+
+    void BSpline::translate(float dx, float dy) {
+        for (auto& p : points) p += PointF(dx, dy);
+    }
+
+    void BSpline::rotate(float x, float y, float rdeg) {
+        float mat[2][2];
+        init_rotate_matrix(rdeg, mat);
+        for (auto& p : points)
+            std::tie(p.x, p.y) = rel_mat_apply(x, y, p.x, p.y, mat);
+    }
+
+    void BSpline::scale(float x, float y, float s) {
+        for (auto& p : points)
+            std::tie(p.x, p.y) = rel_scale(x, y, p.x, p.y, s);
+    }
+ }

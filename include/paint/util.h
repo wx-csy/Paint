@@ -57,9 +57,9 @@ namespace util {
     static inline T_to limit_range(T_from val, 
         T_to lower = std::numeric_limits<T_to>::min(),
         T_to upper = std::numeric_limits<T_to>::max()) {
-        static_assert(std::is_arithmetic<T_to>::value &&
+        static_assert(std::is_arithmetic<T_from>::value &&
                       std::is_arithmetic<T_to>::value,
-                      "template argument must be arithmetic type");
+                      "template arguments must be arithmetic type");
         typedef typename cond_type<
             std::is_floating_point<T_from>::value ||
             std::is_floating_point<T_to>::value, 
@@ -76,7 +76,16 @@ namespace util {
         }
     }
 
-    static inline std::vector<std::string> split(std::string str) {
+    template <typename T>
+    static inline T clamp(T val,
+            T lower = std::numeric_limits<T>::min(),
+            T upper = std::numeric_limits<T>::max()) {
+        if (val < lower) val = lower;
+        if (val > upper) val = upper;
+        return val;
+    }
+
+    static inline std::vector<std::string> split(const std::string &str) {
         std::istringstream iss(str);
         return std::vector<std::string>(
             std::istream_iterator<std::string>(iss),

@@ -83,7 +83,7 @@ static std::pair<Paint::PointF, Paint::PointF>
 }
 
 static std::pair<Paint::PointF, Paint::PointF>
-liang_barsky(Paint::PointF p1, Paint::PointF p2, float x1, float x2, float y1, float y2) {
+        liang_barsky(Paint::PointF p1, Paint::PointF p2, float x1, float x2, float y1, float y2) {
     float p[4] = {p1.x - p2.x, p2.x - p1.x, p1.y - p2.y, p2.y - p1.y};
     float q[4] = {p1.x - x1, x2 - p1.x, p1.y - y1, y2 - p1.y};
     float u1 = 0.0, u2 = 1.0;
@@ -106,7 +106,8 @@ namespace Paint {
     //
     void Line::clip(float x1, float y1, float x2, float y2,
                     LineClippingAlgorithm algo) {
-        std::vector<Line> lines;
+        if (x1 > x2) std::swap(x1, x2);
+        if (y1 > y2) std::swap(y1, y2);
         switch (algo) {
         case LineClippingAlgorithm::CohenSutherland:
             std::tie(p1, p2) = cohen_sutherland(p1, p2, x1, x2, y1, y2);

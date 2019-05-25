@@ -12,6 +12,21 @@
 \usepackage{algpseudocode}
 \usepackage{hyperref}
 \usepackage{bm}
+
+\usepackage{tikz}
+\usepackage{mathdots}
+\usepackage{yhmath}
+\usepackage{cancel}
+\usepackage{color}
+\usepackage{siunitx}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{amssymb}
+\usepackage{gensymb}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usetikzlibrary{fadings}
+
 \pagestyle{fancy}
 \lhead{}
 \chead{图形学大作业系统报告}
@@ -27,7 +42,7 @@
 \graphicspath{{figures/}}
 
 \title{图形学大作业系统报告}
-\author{陈劭源(161240004) \\ \href{mailto:sy\_chen@smail.nju.edu.cn}{sy\_chen@smail.nju.edu.cn}}
+\author{陈劭源(161240004) \\ \href{mailto:sy_chen@smail.nju.edu.cn}{sy\_chen@smail.nju.edu.cn}}
 \date{\today}
 
 \begin{document}
@@ -74,11 +89,11 @@ $$ \Delta(x_i+1, y_i+0.5) = \Delta(x_i, y_i) + 2\Delta y - \Delta x $$
 $$ \Delta(x_i+1, y_i+1) = \Delta(x_i+1, y_i+0.5) - \Delta x $$
 $$ \Delta(x_i+1, y_i) = \Delta(x_i+1, y_i+0.5) + \Delta x $$
 
-Bresenham算法的伪代码如下
+Bresenham算法的伪代码如下：
 
 \begin{algorithm}[htb] 
 \caption{Bresenham画线算法} 
-\label{alg:DDA} 
+\label{alg:Bresenham} 
 \begin{algorithmic}[1] 
 \Require 
 线段的两个端点$(x_1, y_1)$, $(x_2, y_2)$。假定$x_1 < x_2, y_1 \leq y_2, |x_2 - x_1| \geq |y_2 - y_1|$。
@@ -119,7 +134,7 @@ $$ p(x_i+1, y_i) = p(x_i, y_i) + 2r_y^2 $$
 
 \begin{algorithm}[htb] 
 	\caption{中点法绘制椭圆} 
-	\label{alg:DDA} 
+	\label{alg:Midpoint} 
 	\begin{algorithmic}[1] 
 		\Require 
 		椭圆的两轴半径$r_x, r_y$。
@@ -164,24 +179,24 @@ $$ B_{i, j}(t) = t B_{i-1, j}(t) + (1-t) B_{i-1, j+1}(t) $$
 
 \begin{algorithm}[htb] 
 	\caption{分治法绘制参数曲线} 
-	\label{alg:DDA} 
+	\label{alg:CurveDC} 
 	\begin{algorithmic}[1] 
 		\Require 曲线的参数方程$P(t)$ $(0 \leq t \leq 1)$。
 		\Function{递归绘制}{$P, l, r, \bm{x}_l, \bm{x}_r$}
-		\If {$\|\bm{x_l} - \bm{x_r}\|_{\infty} \leq 1$}
+		\If {$\|[\bm{x_l}] - [\bm{x_r}]\|_{\infty} \leq 1$}
 		\State \Return
 		\Else
 		\State $m = \frac{l+r}{2}$, $\bm{x}_m = [P(m)]$
 		\State \Call{递归绘制}{$P, l, m, \bm{x}_l, \bm{x}_m$}
-		\State 绘制点 $\bm{x}_m$
+		\State 绘制点 $[\bm{x}_m]$
 		\State \Call{递归绘制}{$P, m, r, \bm{x}_m, \bm{x}_r$}
 		\EndIf
 		\EndFunction
 		
-		\State $l = 0, r = 1, \bm{x}_l = [P(0)], \bm{x}_r = [P(1)]$
-		\State 绘制点 $\bm{x}_l$
+		\State $l = 0, r = 1, \bm{x}_l = P(0), \bm{x}_r = P(1)$
+		\State 绘制点 $[\bm{x}_l]$
 		\State \Call{递归绘制}{$P, l, r, \bm{x}_l, \bm{x}_r$}
-		\State 绘制点 $\bm{x}_r$
+		\State 绘制点 $[\bm{x}_r]$
 	\end{algorithmic} 
 \end{algorithm}
 
@@ -198,6 +213,86 @@ $$ B_{i, j}(t) = t B_{i-1, j}(t) + (1-t) B_{i-1, j+1}(t) $$
 对于旋转、缩放中心不是原点的情况，先将缩放点连同图元平移至原点，然后进行相应的变换操作，最后平移回去即可。
 
 \subsection{直线裁剪}
+给定线段$S$和矩形$R$，求出$S$完全位于$R$内的部分，就是直线裁剪问题。本系统实现了Cohen-Sutherland和Liang-Barsky两种直线裁剪算法。
+
+\subsection{Cohen-Sutherland算法}
+Cohen-Sutherland算法是利用区位码进行裁剪的算法。将裁剪矩形窗的边界延长，可将平面分为9个区域，每个区域赋予一个4位的二进制编码。编码的前2位表示横坐标的位置，后2位表示纵坐标的位置。区位码的具体编码方式见图\ref{ch-code}。
+
+\begin{figure}[htb]
+\centering
+\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
+\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+ %uncomment if require: \path (0,264.5096130371094);
+ \draw    (97,115) -- (296.43,115) ;
+ \draw    (97,178) -- (296.43,178) ;
+ \draw    (156,62.51) -- (156,234.97) ;
+ \draw    (233,59.51) -- (233,236) ;
+
+ \draw (125,149) node  [align=left] {0001};
+ \draw (193,149) node  [align=left] {0000};
+ \draw (268,150) node  [align=left] {0010};
+ \draw (267,206) node  [align=left] {0110};
+ \draw (124,208) node  [align=left] {0101};
+ \draw (193,207) node  [align=left] {0100};
+ \draw (192,87) node  [align=left] {1000};
+ \draw (265,85) node  [align=left] {1010};
+ \draw (125,86) node  [align=left] {1001};
+\end{tikzpicture}
+\caption{Cohen-Sutherland算法的区位码} \label{ch-code}
+\end{figure}
+
+我们可以计算出被裁剪线段两个端点$P_1, P_2$的区位码$c_1, c_2$，然后根据区位码得到线段和裁剪框的关系：
+\begin{enumerate}
+	\item $c_1 = c_2 = 0$：此时线段完全位于裁剪框内，裁剪完成。
+	\item $c_1 \& c_2 \neq 0$ （其中$\&$表示按位与运算）：此时线段完全位于裁剪框的外侧，裁剪完成。
+	\item 否则，无法确定线段的位置。假设$c_1 \neq 0$，则根据$c_1$中哪一位为1，可以知道用该线段在矩形框外的哪一侧；将该侧部分裁剪掉后，重复整个裁剪过程。
+\end{enumerate}
+
+\subsection{Liang-Barsky算法}
+Liang-Barsky是利用直线参数方程裁剪的算法。利用参数方程，线段可以表示成$\bm{b}t + \bm{a}$ $(t_0 \leq t \leq t_1)$ 的形式，只需要确定位于裁剪框内线段的起始点和终点的参数$t_0, t_1$，就可以完成裁剪。
+
+如图\ref{lb-sample}所示，直线箭头方向为单位向量$\bm{b}$的方向。直线和裁剪边框一共形成4个交点，其中两个是与水平线的交点，另外两个是和垂直线的交点。图中，每个方向上的第一个交点用红点表示，第二个交点用蓝点表示。取红点的参数和原始起点参数三者较大值作为$t_0$，蓝点参数和原始终点参数三者较小值作为$t_1$，即可得到被裁剪线段起点和终点的参数。需要注意的是，当$t_0 > t_1$时，被裁剪线段完全位于裁剪框外，直接舍弃即可。
+
+Liang-Barsky算法的一个缺点是，当被裁剪线段与坐标轴平行和垂直时，将会出现退化的情况，该情况需要特殊处理。
+
+\begin{figure}[htb]
+\centering
+\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt 
+
+\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
+
+%Straight Lines [id:da007799283605366192] 
+\draw    (131.43,224.32) -- (379.66,92.26) ;
+\draw [shift={(381.43,91.32)}, rotate = 511.99] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+
+%Straight Lines [id:da9412325718157886] 
+\draw    (200,44.32) -- (200,283.32) ;
+
+
+%Straight Lines [id:da874951747624505] 
+\draw    (303,43.32) -- (303,282.32) ;
+
+
+%Straight Lines [id:da6728070759628644] 
+\draw    (110.43,122) -- (400.43,122) ;
+
+
+%Straight Lines [id:da976555268728649] 
+\draw    (107,210) -- (396.43,210) ;
+
+
+%Shape: Circle [id:dp6191009001966137] 
+\draw  [fill={rgb, 255:red, 208; green, 2; blue, 27 }  ,fill opacity=1 ] (151.68,210.32) .. controls (151.68,207.56) and (153.92,205.32) .. (156.68,205.32) .. controls (159.44,205.32) and (161.68,207.56) .. (161.68,210.32) .. controls (161.68,213.08) and (159.44,215.32) .. (156.68,215.32) .. controls (153.92,215.32) and (151.68,213.08) .. (151.68,210.32) -- cycle ;
+%Shape: Circle [id:dp5899096618784745] 
+\draw  [fill={rgb, 255:red, 208; green, 2; blue, 27 }  ,fill opacity=1 ] (195.68,188.32) .. controls (195.68,185.56) and (197.92,183.32) .. (200.68,183.32) .. controls (203.44,183.32) and (205.68,185.56) .. (205.68,188.32) .. controls (205.68,191.08) and (203.44,193.32) .. (200.68,193.32) .. controls (197.92,193.32) and (195.68,191.08) .. (195.68,188.32) -- cycle ;
+%Shape: Circle [id:dp2706811488700396] 
+\draw  [fill={rgb, 255:red, 74; green, 144; blue, 226 }  ,fill opacity=1 ] (297.68,133.32) .. controls (297.68,130.56) and (299.92,128.32) .. (302.68,128.32) .. controls (305.44,128.32) and (307.68,130.56) .. (307.68,133.32) .. controls (307.68,136.08) and (305.44,138.32) .. (302.68,138.32) .. controls (299.92,138.32) and (297.68,136.08) .. (297.68,133.32) -- cycle ;
+%Shape: Circle [id:dp0555781220149274] 
+\draw  [fill={rgb, 255:red, 74; green, 144; blue, 226 }  ,fill opacity=1 ] (318.68,121.32) .. controls (318.68,118.56) and (320.92,116.32) .. (323.68,116.32) .. controls (326.44,116.32) and (328.68,118.56) .. (328.68,121.32) .. controls (328.68,124.08) and (326.44,126.32) .. (323.68,126.32) .. controls (320.92,126.32) and (318.68,124.08) .. (318.68,121.32) -- cycle ;
+\end{tikzpicture}
+\caption{Liang-Barsky算法示例}\label{lb-sample}
+\end{figure}
 
 \section{系统介绍}
 \begin{figure}

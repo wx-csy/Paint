@@ -151,8 +151,13 @@ static void drawCurve(std::vector<std::string>& args) {
     for (size_t i = 0; i < nr_point; i++)
         points.emplace_back(from_string<float>(points_str[i*2]),
                             from_string<float>(points_str[i*2+1]));
-    if (canvas.add_primitive(new Paint::BezierCurve(points, forecolor), id) < 0)
-        throw std::invalid_argument("id " + std::to_string(id) + " already exists");
+    if (args[3] == "BSpline") {
+        if (canvas.add_primitive(new Paint::BSpline(points, forecolor), id) < 0)
+            throw std::invalid_argument("id " + std::to_string(id) + " already exists");
+    } else if (args[3] == "Bezier") {
+        if (canvas.add_primitive(new Paint::Bezier(points, forecolor), id) < 0)
+            throw std::invalid_argument("id " + std::to_string(id) + " already exists");
+    } else throw std::invalid_argument("unrecognized curve type");
 }
 
 static void translate(std::vector<std::string>& args) {

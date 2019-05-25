@@ -20,6 +20,7 @@
 #define __PRIMITIVE_H__
 
 #include <paint/device.h>
+#include <list>
 
 namespace Paint {
     class Primitive {
@@ -113,38 +114,47 @@ namespace Paint {
 
     };
 
-    class Curve : public Primitive {
+    class ParametricCurve : public Primitive {
     protected:
-        std::vector<PointF> points;
+        explicit ParametricCurve(RGBColor color) : Primitive(color) {}
 
-
-        Curve(std::vector<PointF> points, RGBColor color) :
-            Primitive(color), points(std::move(points)) { }
-
-        void paint(ImageDevice& device) override = 0;
-
-        void translate(float dx, float dy) override {
-            for (auto& p : points) {
-                p.x += dx;
-                p.y += dy;
-            }
-        }
-
-        void rotate(float x, float y, float rdeg) override;
-
-        void scale(float x, float y, float s) override;
-
-    };
-
-    class BezierCurve : public Curve {
-    private:
-        PointF eval(float t);
+        virtual PointF eval(float t) = 0;
 
     public:
-        BezierCurve(std::vector<PointF> points, RGBColor color) :
-            Curve(std::move(points), color) { }
-
         void paint(ImageDevice& device) override;
+        void translate(float dx, float dy) override = 0;
+        void rotate(float x, float y, float rdeg) override = 0;
+        void scale(float x, float y, float s) override = 0;
+    };
+
+    class Bezier : public ParametricCurve {
+    private:
+        std::vector<PointF> points;
+
+        PointF eval(float t) override;
+
+    public:
+        Bezier(std::vector<PointF> points, RGBColor color) :
+            ParametricCurve(color), points(std::move(points)) { }
+        void translate(float dx, float dy) override;
+        void rotate(float x, float y, float rdeg) override;
+        void scale(float x, float y, float s) override;
+    };
+
+    class BSpline : public ParametricCurve {
+    private:
+        size_t order;
+        std::vector<PointF> points;
+        std::vector<float> knot;
+        float tl, tr;
+
+        PointF eval(float t) override;
+
+    public:
+        BSpline(std::vector<PointF> points, RGBColor color, size_t order = 2);
+        void translate(float dx, float dy) override;
+        void rotate(float x, float y, float rdeg) override;
+        void scale(float x, float y, float s) override;
     };
 }
 
