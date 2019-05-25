@@ -146,7 +146,6 @@ namespace Paint {
         size_t order;
         std::vector<PointF> points;
         std::vector<float> knot;
-        float tl, tr;
 
         PointF eval(float t) override;
 

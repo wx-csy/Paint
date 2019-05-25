@@ -1,8 +1,12 @@
 TARGET_NAME = painter
+STUID         = 161240004
+MONTH         = $(shell date +%m | sed 's/^0*//')
+PACKAGE       = $(STUID)_$(MONTH)月报告.zip
 BUILD_DIR     = build
-SRC_DIR       = src
-UI_DIR        = cli
-INCLUDE_DIR   = include
+SRC_DIR       = source/src
+UI_DIR        = source/cli
+INCLUDE_DIR   = source/include
+BINARY_DIR    = binary
 BINARY  ?= $(BUILD_DIR)/$(TARGET_NAME)
 
 CXX     = g++
@@ -18,7 +22,7 @@ SRCS = $(shell find $(SRC_DIR)/ $(UI_DIR)/ -name "*.cpp")
 OBJS = $(SRCS:%.cpp=$(BUILD_DIR)/%.o)
 
 .DEFAULT_GOAL = $(BINARY)
-.PHONY : clean run doc
+.PHONY : clean run doc package
 
 $(BUILD_DIR)/%.o : %.cpp
 	@mkdir -p $(dir $@)
@@ -31,6 +35,7 @@ $(BINARY) : $(OBJS)
 	@mkdir -p $(dir $@)
 	@echo + [LD] $@
 	@$(LD) $(LDFLAGS) -o $@ $^
+	@cp $@ $(BINARY_DIR)
 
 run : $(BINARY)
 	@./$(BINARY)
@@ -51,5 +56,11 @@ clean :
 	@echo - [RM] $(BUILD_DIR)
 	@rm -rf $(BUILD_DIR)
 
-.DELETE_ON_ERROR : $(BUILD_DIR)/report.pdf 
+package : doc $(BINARY)
+	rm -f $(STUID)_*月报告.zip
+	zip -r $(PACKAGE) binary picture source README.md report.pdf LICENSE Makefile
+	printf "@ report.pdf\n@=$(STUID)_$(MONTH)月报告.pdf\n" | zipnote -w $(PACKAGE)
+	printf "@ README.md\n@=$(STUID)_系统使用说明.md\n" | zipnote -w $(PACKAGE)
+
+.DELETE_ON_ERROR : 
 

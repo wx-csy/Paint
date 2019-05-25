@@ -155,7 +155,7 @@ static void drawCurve(std::vector<std::string>& args) {
         if (canvas.add_primitive(new Paint::BSpline(points, forecolor), id) < 0)
             throw std::invalid_argument("id " + std::to_string(id) + " already exists");
     } else if (args[3] == "Bezier") {
-        if (canvas.add_primitive(new Paint::Bezier(points, forecolor), id) < 0)
+        if (canvas.add_primitive(new Paint::BSpline(points, forecolor), id) < 0)
             throw std::invalid_argument("id " + std::to_string(id) + " already exists");
     } else throw std::invalid_argument("unrecognized curve type");
 }

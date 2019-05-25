@@ -50,7 +50,7 @@
 
 \section{综述}
 
-
+目前已完成所有算法的实现和命令行界面，图形界面尚未完成。
 
 \section{图元绘制算法介绍}
 绘制曲线$f(x,y) = 0$的基本原则是：当$\left|\frac{\mathrm{d}y}{\mathrm{d}x} \big|_{(x_0, y_0)} \right| \leq 1$时，沿$x$轴递进采样画点；当$\left|\frac{\mathrm{d}y}{\mathrm{d}x} \big|_{(x_0, y_0)} \right| > 1$时，沿$y$轴递进采样画点。这样可以保证相邻两个绘制点$(x_i, y_i), (x_{i+1}, y_{i+1})$之间满足$\max\{|x_i - x_{i+1}|, |y_i - y_{i+1}|\} = 1$。
@@ -201,6 +201,36 @@ $$ B_{i, j}(t) = t B_{i-1, j}(t) + (1-t) B_{i-1, j+1}(t) $$
 \end{algorithm}
 
 \subsubsection{B-Spline曲线}
+B-Spline曲线是对Bezier曲线的一种改进。Bezier曲线有计算量大，无法局部修改等问题，而B-Spline采用分段方法，可以较好地改善这些问题。
+
+B-Spline也是利用权函数对样本点混合得到。$n+1$个样本点上的$k$次B-Spline曲线的公式如下：
+$$ p(u) = \sum_{i=0}^n P_i N_{i, k}(u) $$
+
+由于B-Spline需要分段绘制曲线，我们需要将参数取值分为若干\textbf{节}：
+$$0 = u_0 \leq u_1 \leq u_2 \leq \cdots \leq u_m = 1$$
+其中，$m = n + k + 1$。
+
+B-Spline的权函数定义如下：
+
+\begin{gather}
+B_{i, 1}(u) = 
+\begin{cases} 1, & u_i \leq u \leq u_{i+1} \\ 
+              0, & \text{otherwise} 
+\end{cases} \\
+B_{i, k+1}(u) = \frac{u - u_i}{u_{i+k} - u_i} B_{i,k}(u) + 
+	\frac{u_{i+k+1} - u}{u_{i+k+1} - u_{i+1}}B_{i+1, k}(u)
+\end{gather}
+
+我们可以等距的划分节点，但这样的B-Spline曲线不经过起点和终点。为了确保B-Spline曲线经过起点和终点，我们一般将前$k+1$个节点置为0，后$k+1$个节点置为1，中间节点则等距选取：
+
+$$ u_i = \begin{cases}
+0, & i \leq k \\
+\frac{i - k}{m - 2k}, & k < i < m - k \\
+1, & i \geq m - k
+\end{cases}
+$$
+
+在绘制B-Spline时，仍然采用和Bezier曲线相同的算法。
 
 \section{图元变换算法介绍}
 \subsection{图元平移、旋转、缩放}

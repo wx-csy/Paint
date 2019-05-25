@@ -146,32 +146,34 @@ namespace Paint {
     //
     // class BSpline : public ParametricCurve
     //
-    BSpline::BSpline(std::vector<PointF> points, RGBColor color, size_t order) :
-            ParametricCurve(color), order(order), points(std::move(points)) {
-        if (points.size() <= order)
+    BSpline::BSpline(std::vector<PointF> pts, RGBColor color, size_t order) :
+            ParametricCurve(color), order(order), points(std::move(pts)) {
+        if (this->points.size() <= order)
             throw std::invalid_argument("number of points must be greater than order");
-        size_t nknot = this->points.size() + order;
-        knot.resize(nknot + 1);
-        for (size_t i = 0; i <= nknot; i++) knot[i] = 1.0f * i / nknot;
-        tl = float(order) / (order + this->points.size());
-        tr = 1.0f - tl;
+        size_t nknot = this->points.size() - order;
+        for (size_t i = 0; i < order; i++) knot.push_back(0.0f);
+        for (size_t i = 0; i <= nknot; i++) knot.push_back(1.0f * i / nknot);
+        for (size_t i = 0; i < order; i++) knot.push_back(1.0f);
     }
 
     PointF BSpline::eval(float t) {
-        t = tl + t * (tr - tl);
+        if (t <= knot.front()) return points.front();
+        if (t >= knot.back()) return points.back();
         std::vector<float> w(knot.size() - 1);
         for (size_t i = 0; i < knot.size() - 1; i++)
             w[i] = (t >= knot[i] and t < knot[i+1] ? 1.0f : 0.0f);
-        if (t < knot.front()) w.front() = 1.0f;
-        if (t >= knot.back()) w.back() = 1.0f;
+        auto safediv = [](float x, float y) -> float {
+            return (y == 0.0f ? 0.0f : x / y);
+        };
         for (size_t r = 1; r <= order; r++) {
             for (size_t i = 0; i < w.size() - 1; i++) {
                 w[i] =
-                    w[i] * (t - knot[i]) / (knot[i+r] - knot[i]) +
-                    w[i+1] * (knot[i+r+1] - t) / (knot[i+r+1] - knot[i+1]);
+                    w[i] * safediv(t - knot[i], knot[i+r] - knot[i]) +
+                    w[i+1] * safediv(knot[i+r+1] - t, knot[i+r+1] - knot[i+1]);
             }
             w.pop_back();
         }
+        // assert(w.size() == points.size());
         return inner_product(w.begin(), w.end(), points.begin(), PointF());
     }
 

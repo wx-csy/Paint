@@ -36,6 +36,8 @@
 
 ## Build
 
+The prebuilt binary file is in `binary` directory. However, recompilation on your machine is strongly recommended to avoid potential incompatibility.
+
 Softwares used to compile and run: 
 
 - OS: Ubuntu 18.04.2 LTS
