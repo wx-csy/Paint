@@ -1,39 +1,5 @@
 # Paint
 
-## Development Status
-
-- [x] saveCanvas
-- [x] setColor
-- [x] drawLine
-  - [x] DDA
-  - [x] Bresenham
-- [x] drawPolygon
-  - [x] DDA
-  - [x] Bresenham
-- [x] drawEllipse
-  - [x] Mid-point
-- [ ] drawCurve
-  - [x] Bezier
-  - [ ] B-spline
-- [x] translate
-  - [x] Line
-  - [x] Polygon
-  - [x] Ellipse
-  - [x] Curve
-- [x] rotate
-  - [x] Line
-  - [x] Polygon
-  - [ ] Ellipse
-  - [x] Curve
-- [x] scale
-  - [x] Line
-  - [x] Polygon
-  - [x] Ellipse
-  - [x] Curve
-- [x] clip (line)
-  - [x] Cohen-Sutherland
-  - [x] Liang-Barsky
-
 ## Build
 
 The prebuilt binary file is in `binary` directory. However, recompilation on your machine is strongly recommended to avoid potential incompatibility.
