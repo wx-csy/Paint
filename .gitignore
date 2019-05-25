@@ -2,5 +2,5 @@ build/
 cmake-build-debug/
 .idea/
 **.user
-gui/
-!gui/Paint-GUI
+source/gui/*
+!source/gui/Paint-GUI
