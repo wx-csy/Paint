@@ -1,4 +1,5 @@
 #include <QImage>
+#include <QPixmap>
 #include <paint/paint.h>
 #include <paint/device.h>
 
@@ -13,8 +14,7 @@ static inline QRgb paint_color_to_qrgb(Paint::RGBColor color) {
     return qRgb(color.red, color.green, color.blue);
 }
 
-
-class QImageDevice : Paint::ImageDevice
+class QImageDevice : public Paint::ImageDevice
 {
 private:
     QImage image;
@@ -38,7 +38,14 @@ public:
 
     void reset(size_t width, size_t height) override {
         Paint::ImageDevice::reset(width, height);
+        image = QImage(width, height, QImage::Format_RGB32);
         image.fill(paint_color_to_qrgb(Paint::RGBColor()));
+    }
+
+    QPixmap getPixmap() {
+        QPixmap pixmap;
+        pixmap.convertFromImage(image);
+        return pixmap;
     }
 };
 

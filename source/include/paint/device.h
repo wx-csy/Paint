@@ -20,7 +20,6 @@
 #define __DEVICE_H__
 
 namespace Paint {
-
     class ImageDevice {
     protected:
         size_t width, height;

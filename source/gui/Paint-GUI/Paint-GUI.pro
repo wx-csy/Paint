@@ -26,11 +26,13 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+        movablelabel.cpp
 
 HEADERS += \
         device.h \
-        mainwindow.h
+        mainwindow.h \
+        movablelabel.h
 
 INCLUDEPATH += $$PWD/../../include
 

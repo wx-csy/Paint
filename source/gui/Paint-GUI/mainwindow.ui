@@ -10,6 +10,9 @@
     <height>614</height>
    </rect>
   </property>
+  <property name="mouseTracking">
+   <bool>true</bool>
+  </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
@@ -17,9 +20,15 @@
    <enum>Qt::LeftToRight</enum>
   </property>
   <widget class="QWidget" name="centralWidget">
+   <property name="mouseTracking">
+    <bool>true</bool>
+   </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <widget class="QScrollArea" name="scrollArea">
+      <property name="mouseTracking">
+       <bool>true</bool>
+      </property>
       <property name="widgetResizable">
        <bool>true</bool>
       </property>
@@ -38,13 +47,16 @@
          <height>700</height>
         </size>
        </property>
-       <widget class="QLabel" name="label">
+       <property name="mouseTracking">
+        <bool>true</bool>
+       </property>
+       <widget class="MovableLabel" name="label">
         <property name="geometry">
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>341</width>
-          <height>271</height>
+          <width>361</width>
+          <height>321</height>
          </rect>
         </property>
         <property name="frameShape">
@@ -52,6 +64,9 @@
         </property>
         <property name="text">
          <string/>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::PlainText</enum>
         </property>
        </widget>
       </widget>
@@ -187,13 +202,17 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>MovableLabel</class>
+   <extends>QLabel</extends>
+   <header location="global">movablelabel.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>pushButton_Line</tabstop>
   <tabstop>pushButton_3</tabstop>
   <tabstop>pushButton_2</tabstop>
-  <tabstop>graphicsView_2</tabstop>
-  <tabstop>scrollArea_2</tabstop>
-  <tabstop>listView_2</tabstop>
  </tabstops>
  <resources/>
  <connections/>

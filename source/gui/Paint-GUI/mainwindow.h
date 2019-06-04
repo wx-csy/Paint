@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMouseEvent>
 #include <device.h>
 
 namespace Ui {
@@ -14,12 +15,14 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+    ~MainWindow() override;
 
 private slots:
     void on_actionAbout_Paint_triggered();
 
     void on_cmdResize_clicked();
+
+    void canvasMouseMoved(int x, int y);
 
 private:
 

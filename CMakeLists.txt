@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6)
 project(Paint)
 set(CMAKE_CXX_STANDARD 14)
-include_directories(include)
+include_directories(source/include)
 file(GLOB SRC_FILES source/src/*.cpp source/src/primitive/*.cpp source/cli/*.cpp)
 add_executable(paint ${SRC_FILES})
