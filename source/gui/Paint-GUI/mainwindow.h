@@ -24,17 +24,21 @@ public:
 private slots:
     void on_actionAbout_Paint_triggered();
 
-    void on_cmdResize_clicked();
-
     void canvasMouseMoved(int x, int y);
 
     void canvasMouseClicked(int x, int y);
 
     void canvasMouseRightClicked(int x, int y);
 
-    void on_pushButton_Line_clicked();
+    void on_cmdResize_clicked();
 
-    void on_pushButton_3_clicked();
+    void on_cmdLine_clicked();
+
+    void on_cmdPolygon_clicked();
+
+    void on_cmdEllipse_clicked();
+
+    void on_cmdBezier_clicked();
 
 private:
     void command_status_handler(Command::status status);

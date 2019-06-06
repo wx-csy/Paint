@@ -128,7 +128,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_Line">
+      <widget class="QPushButton" name="cmdLine">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -144,7 +144,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_3">
+      <widget class="QPushButton" name="cmdPolygon">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -157,7 +157,14 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="cmdEllipse">
+       <property name="text">
+        <string>Ellipse</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cmdBezier">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -165,7 +172,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Curve</string>
+        <string>Bezier</string>
        </property>
       </widget>
      </item>
@@ -210,9 +217,9 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>pushButton_Line</tabstop>
-  <tabstop>pushButton_3</tabstop>
-  <tabstop>pushButton_2</tabstop>
+  <tabstop>cmdLine</tabstop>
+  <tabstop>cmdPolygon</tabstop>
+  <tabstop>cmdBezier</tabstop>
  </tabstops>
  <resources/>
  <connections/>

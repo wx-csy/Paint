@@ -84,14 +84,26 @@ void MainWindow::on_cmdResize_clicked()
     render();
 }
 
-void MainWindow::on_pushButton_Line_clicked()
+void MainWindow::on_cmdLine_clicked()
 {
     if (current_command) command_status_handler(current_command->abort());
     current_command.reset(new LineCommand(canvas, Paint::Colors::black, Paint::Line::Algorithm::Bresenham));
 }
 
-void MainWindow::on_pushButton_3_clicked()
+void MainWindow::on_cmdPolygon_clicked()
 {
     if (current_command) command_status_handler(current_command->abort());
     current_command.reset(new PolygonCommand(canvas, Paint::Colors::black, Paint::Line::Algorithm::Bresenham));
+}
+
+void MainWindow::on_cmdEllipse_clicked()
+{
+    if (current_command) command_status_handler(current_command->abort());
+    current_command.reset(new EllipseCommand(canvas, Paint::Colors::black));
+}
+
+void MainWindow::on_cmdBezier_clicked()
+{
+    if (current_command) command_status_handler(current_command->abort());
+    current_command.reset(new BezierCommand(canvas, Paint::Colors::black));
 }
