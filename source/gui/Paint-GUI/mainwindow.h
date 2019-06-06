@@ -4,6 +4,9 @@
 #include <QMainWindow>
 #include <QMouseEvent>
 #include <device.h>
+#include <memory>
+#include <command.h>
+#include "paint/canvas.h"
 
 namespace Ui {
 class MainWindow;
@@ -16,6 +19,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
+    void render();
 
 private slots:
     void on_actionAbout_Paint_triggered();
@@ -24,10 +28,20 @@ private slots:
 
     void canvasMouseMoved(int x, int y);
 
-private:
+    void canvasMouseClicked(int x, int y);
 
+    void canvasMouseRightClicked(int x, int y);
+
+    void on_pushButton_Line_clicked();
+
+    void on_pushButton_3_clicked();
+
+private:
+    void command_status_handler(Command::status status);
+
+    std::unique_ptr<Command> current_command;
     Ui::MainWindow *ui;
-    QImageDevice device;
+    Paint::Canvas<QImageDevice> canvas;
 };
 
 #endif // MAINWINDOW_H

@@ -43,8 +43,6 @@ namespace Paint {
     class Line : public Primitive {
     public:
         enum class Algorithm : int { DDA, Bresenham };
-
-    private:
         PointF p1, p2;
         Algorithm algo;
 
@@ -68,11 +66,10 @@ namespace Paint {
     };
 
     class Polygon : public Primitive {
-    private:
+    public:
         std::vector<std::pair<float, float>> points;
         Line::Algorithm algo;
 
-    public:
         Polygon(std::vector<std::pair<float, float>> points,
                 RGBColor color, Line::Algorithm algo) :
             Primitive(color), points(std::move(points)), algo(algo) {}
@@ -92,10 +89,9 @@ namespace Paint {
     };
 
     class Ellipse : public Primitive {
-    private:
+    public:
         float x, y, rx, ry;
 
-    public:
         Ellipse(float x, float y, float rx, float ry, RGBColor color) :
             Primitive(color), x(x), y(y), rx(rx), ry(ry) {}
 
@@ -129,11 +125,10 @@ namespace Paint {
 
     class Bezier : public ParametricCurve {
     private:
-        std::vector<PointF> points;
-
         PointF eval(float t) override;
 
     public:
+        std::vector<PointF> points;
         Bezier(std::vector<PointF> points, RGBColor color) :
             ParametricCurve(color), points(std::move(points)) { }
         void translate(float dx, float dy) override;
@@ -143,13 +138,13 @@ namespace Paint {
 
     class BSpline : public ParametricCurve {
     private:
-        size_t order;
-        std::vector<PointF> points;
         std::vector<float> knot;
 
         PointF eval(float t) override;
 
     public:
+        size_t order;
+        std::vector<PointF> points;
         BSpline(std::vector<PointF> points, RGBColor color, size_t order = 2);
         void translate(float dx, float dy) override;
         void rotate(float x, float y, float rdeg) override;

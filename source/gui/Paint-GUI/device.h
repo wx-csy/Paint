@@ -22,13 +22,18 @@ private:
 public:
     explicit QImageDevice(size_t width = 800, size_t height = 600) :
         ImageDevice(width, height), image((int)width, (int)height, QImage::Format_RGB32)
-    { }
+    {
+        reset(width, height);
+    }
 
     Paint::RGBColor getPixel(ssize_t x, ssize_t y) const override {
         if (x < 0 || y < 0 || size_t(x) >= width || size_t(y) >= height)
             throw std::range_error("pixel out of canvas");
         return qrgb_to_paint_color(image.pixel(x, y));
     }
+
+    int getWidth() { return int(width); }
+    int getHeight() { return int(height); }
 
     void setPixel(ssize_t x, ssize_t y, Paint::RGBColor color) override {
         if (x < 0 || y < 0 || size_t(x) >= width || size_t(y) >= height)
@@ -39,7 +44,7 @@ public:
     void reset(size_t width, size_t height) override {
         Paint::ImageDevice::reset(width, height);
         image = QImage(width, height, QImage::Format_RGB32);
-        image.fill(paint_color_to_qrgb(Paint::RGBColor()));
+        image.fill(paint_color_to_qrgb(Paint::Colors::white));
     }
 
     QPixmap getPixmap() {

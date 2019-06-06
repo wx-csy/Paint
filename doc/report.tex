@@ -141,16 +141,16 @@ $$ p(x_i+1, y_i) = p(x_i, y_i) + 2r_y^2 $$
 		\State $p = r_y^2 - r_x^2 ry + rx^2 / 4$
 		\State $p_x = 0, p_y = 2r_x^2r_y$
 		\State $c_x = 0, c_y = r_y$
-		\While{$x = x_1$ to $x_2$}
+		\For{$x = x_1$ to $x_2$}
 		\State $c_x = c_x + 1$, $p_x = p_x + 2 r_y^2$ 
 		\If{$p < 0$}
-		\State $p = p + r_y^2 + px$
+		\State $p = p + r_y^2 + p_x$
 		\Else
 		\State $c_y = c_y - 1$, $p_y = p_y - 2 r_x^2$
-		\State $p = p + r_y^2 + px - py$
+		\State $p = p + r_y^2 + p_x - p_y$
 		\EndIf
-		\State 绘制点 $(x, y)$
-		\EndWhile
+		\State 绘制点 $(c_x, c_y)$
+		\EndFor
 		\State 交换$x, y$后重复上述步骤。
 	\end{algorithmic} 
 \end{algorithm}

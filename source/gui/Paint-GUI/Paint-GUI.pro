@@ -25,11 +25,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        command.cpp \
         main.cpp \
         mainwindow.cpp \
-        movablelabel.cpp
+        movablelabel.cpp \
+        $$PWD/../../src/*.cpp \
+        $$PWD/../../src/primitive/*.cpp
 
 HEADERS += \
+        command.h \
         device.h \
         mainwindow.h \
         movablelabel.h
