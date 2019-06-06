@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QInputDialog>
 #include <QLayout>
+#include <QColorDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -16,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->label, &MovableLabel::mouseMoved, this, &MainWindow::canvasMouseMoved);
     connect(ui->label, &MovableLabel::mouseClicked, this, &MainWindow::canvasMouseClicked);
     connect(ui->label, &MovableLabel::mouseRightClicked, this, &MainWindow::canvasMouseRightClicked);
+    setColor(Paint::Colors::black);
     render();
 }
 
@@ -87,23 +89,45 @@ void MainWindow::on_cmdResize_clicked()
 void MainWindow::on_cmdLine_clicked()
 {
     if (current_command) command_status_handler(current_command->abort());
-    current_command.reset(new LineCommand(canvas, Paint::Colors::black, Paint::Line::Algorithm::Bresenham));
+    current_command.reset(new LineCommand(canvas, color, Paint::Line::Algorithm::Bresenham));
 }
 
 void MainWindow::on_cmdPolygon_clicked()
 {
     if (current_command) command_status_handler(current_command->abort());
-    current_command.reset(new PolygonCommand(canvas, Paint::Colors::black, Paint::Line::Algorithm::Bresenham));
+    current_command.reset(new PolygonCommand(canvas, color, Paint::Line::Algorithm::Bresenham));
 }
 
 void MainWindow::on_cmdEllipse_clicked()
 {
     if (current_command) command_status_handler(current_command->abort());
-    current_command.reset(new EllipseCommand(canvas, Paint::Colors::black));
+    current_command.reset(new EllipseCommand(canvas, color));
 }
 
 void MainWindow::on_cmdBezier_clicked()
 {
     if (current_command) command_status_handler(current_command->abort());
-    current_command.reset(new BezierCommand(canvas, Paint::Colors::black));
+    current_command.reset(new BezierCommand(canvas, color));
+}
+
+void MainWindow::on_cmdBSpline_clicked()
+{
+    if (current_command) command_status_handler(current_command->abort());
+    current_command.reset(new BSplineCommand(canvas, color));
+}
+
+void MainWindow::setColor(Paint::RGBColor color)
+{
+    QPalette palette;
+    this->color = color;
+    palette.setColor(QPalette::Background, QColor(color.red, color.green, color.blue));
+    ui->colorLabel->setAutoFillBackground(true);
+    ui->colorLabel->setPalette(palette);
+}
+
+void MainWindow::on_cmdChangeColor_clicked()
+{
+    auto newcolor = QColorDialog::getColor(Qt::white, this);
+    if (newcolor.isValid())
+        setColor(Paint::RGBColor(newcolor.red(), newcolor.green(), newcolor.blue()));
 }

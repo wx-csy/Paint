@@ -87,7 +87,6 @@
     <property name="title">
      <string>Files</string>
     </property>
-    <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -124,6 +123,13 @@
       <widget class="QPushButton" name="cmdResize">
        <property name="text">
         <string>Resize</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
       </widget>
      </item>
@@ -177,6 +183,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="cmdBSpline">
+       <property name="text">
+        <string>B-Spline</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -188,6 +201,20 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cmdChangeColor">
+       <property name="text">
+        <string>Color</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="colorLabel">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -217,9 +244,14 @@
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>cmdResize</tabstop>
   <tabstop>cmdLine</tabstop>
   <tabstop>cmdPolygon</tabstop>
+  <tabstop>cmdEllipse</tabstop>
   <tabstop>cmdBezier</tabstop>
+  <tabstop>cmdBSpline</tabstop>
+  <tabstop>cmdChangeColor</tabstop>
+  <tabstop>scrollArea</tabstop>
  </tabstops>
  <resources/>
  <connections/>

@@ -40,12 +40,18 @@ private slots:
 
     void on_cmdBezier_clicked();
 
+    void on_cmdBSpline_clicked();
+
+    void on_cmdChangeColor_clicked();
+
 private:
     void command_status_handler(Command::status status);
+    void setColor(Paint::RGBColor color);
 
     std::unique_ptr<Command> current_command;
     Ui::MainWindow *ui;
     Paint::Canvas<QImageDevice> canvas;
+    Paint::RGBColor color;
 };
 
 #endif // MAINWINDOW_H
