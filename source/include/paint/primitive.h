@@ -33,6 +33,7 @@ namespace Paint {
         virtual void translate(float dx, float dy) = 0;
         virtual void rotate(float x, float y, float rdeg) = 0;
         virtual void scale(float x, float y, float s) = 0;
+        virtual std::string to_string() = 0;
         virtual ~Primitive() = default;
     };
 
@@ -63,6 +64,10 @@ namespace Paint {
 
         void clip(float x1, float y1, float x2, float y2,
                   LineClippingAlgorithm algo);
+
+        std::string to_string() override {
+            return "line " + color.to_string() + " " + p1.to_string() + " - " + p2.to_string();
+        }
     };
 
     class Polygon : public Primitive {
@@ -86,6 +91,10 @@ namespace Paint {
         void rotate(float x, float y, float rdeg) override;
 
         void scale(float x, float y, float s) override;
+
+        std::string to_string() override {
+            return "polygon " + color.to_string();
+        }
     };
 
     class Ellipse : public Primitive {
@@ -108,6 +117,9 @@ namespace Paint {
 
         void scale(float x, float y, float s) override;
 
+        std::string to_string() override {
+            return "ellipse " + color.to_string();
+        }
     };
 
     class ParametricCurve : public Primitive {
@@ -134,6 +146,10 @@ namespace Paint {
         void translate(float dx, float dy) override;
         void rotate(float x, float y, float rdeg) override;
         void scale(float x, float y, float s) override;
+
+        std::string to_string() override {
+            return "Bezier " + color.to_string();
+        }
     };
 
     class BSpline : public ParametricCurve {
@@ -149,6 +165,10 @@ namespace Paint {
         void translate(float dx, float dy) override;
         void rotate(float x, float y, float rdeg) override;
         void scale(float x, float y, float s) override;
+
+        std::string to_string() override {
+            return "BSpline " + color.to_string();
+        }
     };
 }
 

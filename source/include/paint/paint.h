@@ -37,6 +37,12 @@ namespace Paint {
                  uint8_t green = 0, 
                  uint8_t blue = 0) noexcept :
             red(red), green(green), blue(blue) { }
+
+        std::string to_string() {
+            char buf[32];
+            sprintf(buf, "#%02x%02x%02x", red, green, blue);
+            return buf;
+        }
     };
 
     template <typename T>
@@ -52,6 +58,10 @@ namespace Paint {
         Point& operator -= (Point rhs) { x -= rhs.x; y -= rhs.y; return *this; }
         Point& operator *= (T k) { x *= k; y *= k; return *this; }
         T lmax() { return std::max(std::abs(x), std::abs(y)); }
+
+        std::string to_string() {
+            return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
+        }
     };
 
     typedef Point<int> PointI;

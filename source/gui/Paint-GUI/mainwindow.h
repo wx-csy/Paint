@@ -6,6 +6,7 @@
 #include <device.h>
 #include <memory>
 #include <command.h>
+#include <QStringListModel>
 #include "paint/canvas.h"
 
 namespace Ui {
@@ -47,11 +48,13 @@ private slots:
 private:
     void command_status_handler(Command::status status);
     void setColor(Paint::RGBColor color);
+    void updateList();
 
     std::unique_ptr<Command> current_command;
     Ui::MainWindow *ui;
     Paint::Canvas<QImageDevice> canvas;
     Paint::RGBColor color;
+    QStringListModel model;
 };
 
 #endif // MAINWINDOW_H

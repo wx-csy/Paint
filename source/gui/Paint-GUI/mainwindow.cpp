@@ -14,10 +14,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->label->setMouseTracking(true);
     ui->label->resize(canvas.getWidth(), canvas.getHeight());
+    ui->splitter->setStretchFactor(0, 2);
     connect(ui->label, &MovableLabel::mouseMoved, this, &MainWindow::canvasMouseMoved);
     connect(ui->label, &MovableLabel::mouseClicked, this, &MainWindow::canvasMouseClicked);
     connect(ui->label, &MovableLabel::mouseRightClicked, this, &MainWindow::canvasMouseRightClicked);
     setColor(Paint::Colors::black);
+    ui->primitiveList->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->primitiveList->setModel(&model);
     render();
 }
 
@@ -31,6 +34,15 @@ void MainWindow::render()
     canvas.clear(Paint::Colors::white);
     canvas.paint();
     ui->label->setPixmap(canvas.getPixmap());
+
+    // ui->primitiveList->setModel(&model);
+}
+
+void MainWindow::updateList() {
+    QStringList list;
+    for (auto& pr : canvas.primitives)
+        list << pr.second->to_string().c_str();
+    model.setStringList(list);
 }
 
 void MainWindow::on_actionAbout_Paint_triggered()
@@ -42,10 +54,14 @@ void MainWindow::on_actionAbout_Paint_triggered()
 void MainWindow::command_status_handler(Command::status status)
 {
     switch (status) {
-    case Command::ABORT : // fall through
+    case Command::ABORT :
+        current_command = nullptr;
+        render();
+        break;
     case Command::DONE :
         current_command = nullptr;
         render();
+        updateList();
         break;
     case Command::CONTINUE :
         break;
