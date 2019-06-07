@@ -5,3 +5,4 @@ cmake-build-debug/
 source/gui/*
 !source/gui/Paint-GUI
 gui
+**.pdf

@@ -83,8 +83,6 @@ private slots:
 
     void on_actionLine_Algorithm_toggled(bool arg1);
 
-    void on_actionClip_Algorithm_hovered();
-
     void on_actionClip_Algorithm_toggled(bool arg1);
 
 private:
