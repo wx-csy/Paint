@@ -74,7 +74,7 @@ namespace Paint {
     namespace Colors {
         constexpr RGBColor black(0, 0, 0);
         constexpr RGBColor white(255, 255, 255); 
-    }
+    }{}
         
 
 }

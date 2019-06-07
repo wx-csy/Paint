@@ -24,7 +24,7 @@ SRCS = $(shell find $(SRC_DIR)/ $(UI_DIR)/ -name "*.cpp")
 OBJS = $(SRCS:%.cpp=$(BUILD_DIR)/%.o)
 
 .DEFAULT_GOAL = $(BINARY_GUI)
-.PHONY : clean run doc package
+.PHONY : clean run doc package targets
 
 $(BUILD_DIR)/%.o : %.cpp
 	@mkdir -p $(dir $@)
@@ -64,10 +64,12 @@ $(BINARY_GUI) :
 	@mkdir -p $(dir $@)
 	@cp source/gui/Paint-GUI/Paint-GUI $@
 
-package : doc $(BINARY) $(BINARY_GUI)
-	rm -f $(STUID)_*月报告.zip
+targets : $(BINARY) $(BINARY_GUI)
 	mkdir -p $(BINARY_DIR)
 	cp $(BINARY) $(BINARY_GUI) $(BINARY_DIR)
+
+package : doc targets $(BINARY) $(BINARY_GUI)
+	rm -f $(STUID)_*月报告.zip
 	-@cd source/gui/Paint-GUI && make clean
 	zip -r $(PACKAGE) $(BINARY_DIR) picture source README.md report.pdf LICENSE Makefile
 	printf "@ report.pdf\n@=$(STUID)_$(MONTH)月报告.pdf\n" | zipnote -w $(PACKAGE)
