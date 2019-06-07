@@ -31,9 +31,6 @@ public:
         return qrgb_to_paint_color(image.pixel(x, y));
     }
 
-    int getWidth() { return int(width); }
-    int getHeight() { return int(height); }
-
     void setPixel(ssize_t x, ssize_t y, Paint::RGBColor color) override {
         if (x < 0 || y < 0 || x >= ssize_t(width) || y >= ssize_t(height))
             return;

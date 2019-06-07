@@ -1,0 +1,6 @@
+build*
+Paint-GUI/*.o
+Paint-GUI/moc_*.cpp
+Paint-GUI/ui_*.h
+Paint-GUI/Paint-GUI
+Paint-GUI/Makefile

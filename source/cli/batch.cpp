@@ -35,8 +35,17 @@
 using util::from_string;
 using util::limit_range;
 
+extern bool mathcoord;
+
 static Paint::Canvas<LibBmp::BmpDevice> canvas;
 static Paint::RGBColor forecolor;
+
+static inline float read_x(std::string str) { return from_string<float>(str); }
+static inline float read_y(std::string str) {
+    float val = from_string<float>(str);
+    if (mathcoord) val = canvas.getHeight() - val;
+    return val;
+}
 
 
 static const std::unordered_map<std::string, 
@@ -71,6 +80,17 @@ static void resetCanvas(std::vector<std::string>& args) {
            height = limit_range<size_t>(from_string(args[2]),
                     0, Paint::MAX_COORDINATE);
     canvas.reset(width, height);
+    canvas.primitives.clear();
+}
+
+static void resize(std::vector<std::string>& args) {
+    if (args.size() != 3)
+        throw std::invalid_argument("invalid argument number");
+    size_t width = limit_range<size_t>(from_string(args[1]),
+                                       0, Paint::MAX_COORDINATE),
+        height = limit_range<size_t>(from_string(args[2]),
+                                     0, Paint::MAX_COORDINATE);
+    canvas.reset(width, height);
 }
 
 static void saveCanvas(std::vector<std::string>& args) {
@@ -94,8 +114,8 @@ static void drawLine(std::vector<std::string>& args) {
     if (args.size() != 7) 
         throw std::invalid_argument("invalid argument number");
     int id = from_string(args[1]);
-    float x1 = from_string<float>(args[2]), y1 = from_string<float>(args[3]),
-          x2 = from_string<float>(args[4]), y2 = from_string<float>(args[5]);
+    float x1 = read_x(args[2]), y1 = read_y(args[3]),
+          x2 = read_x(args[4]), y2 = read_y(args[5]);
     if (!canvas.primitives.emplace(id,
             new Paint::Line(Paint::PointF(x1, y1), Paint::PointF(x2, y2),
                 forecolor, ldalg.at(args[6]))).second)
@@ -118,8 +138,8 @@ static void drawPolygon(std::vector<std::string>& args) {
         throw std::invalid_argument("invalid number of coordinates");
     std::vector<std::pair<float, float>> points;
     for (size_t i = 0; i < nr_point; i++) 
-        points.emplace_back(from_string<float>(points_str[i*2]),
-                            from_string<float>(points_str[i*2+1]));
+        points.emplace_back(read_x(points_str[i*2]),
+                            read_y(points_str[i*2+1]));
     if (canvas.add_primitive(new Paint::Polygon(points, forecolor, algo), id) < 0)
         throw std::invalid_argument("id " + std::to_string(id) + " already exists");
 }
@@ -128,7 +148,7 @@ static void drawEllipse(std::vector<std::string>& args) {
     if (args.size() != 6) 
         throw std::invalid_argument("invalid argument number");
     int id = from_string(args[1]);
-    float x = from_string<float>(args[2]), y = from_string<float>(args[3]),
+    float x = read_x(args[2]), y = read_y(args[3]),
           rx = from_string<float>(args[4]), ry = from_string<float>(args[5]);
     if (canvas.add_primitive(new Paint::Ellipse(x, y, rx, ry, forecolor), id) < 0)
         throw std::invalid_argument("id " + std::to_string(id) + " already exists");
@@ -149,8 +169,8 @@ static void drawCurve(std::vector<std::string>& args) {
         throw std::invalid_argument("invalid number of coordinates");
     std::vector<Paint::PointF> points;
     for (size_t i = 0; i < nr_point; i++)
-        points.emplace_back(from_string<float>(points_str[i*2]),
-                            from_string<float>(points_str[i*2+1]));
+        points.emplace_back(read_x(points_str[i*2]),
+                            read_y(points_str[i*2+1]));
     if (args[3] == "BSpline") {
         if (canvas.add_primitive(new Paint::BSpline(points, forecolor), id) < 0)
             throw std::invalid_argument("id " + std::to_string(id) + " already exists");
@@ -164,7 +184,7 @@ static void translate(std::vector<std::string>& args) {
     if (args.size() != 4) 
         throw std::invalid_argument("invalid argument number");
     int id = from_string(args[1]);
-    float dx = from_string<float>(args[2]), dy = from_string<float>(args[3]);
+    float dx = from_string<float>(args[2]), dy = -from_string<float>(args[3]);
     canvas[id].translate(dx, dy);
 }
 
@@ -172,7 +192,7 @@ static void rotate(std::vector<std::string>& args) {
     if (args.size() != 5) 
         throw std::invalid_argument("invalid argument number");
     int id = from_string(args[1]);
-    float cx = from_string<float>(args[2]), cy = from_string<float>(args[3]);
+    float cx = read_x(args[2]), cy = read_y(args[3]);
     float rdeg = from_string<float>(args[4]);
     canvas[id].rotate(cx, cy, rdeg);
 }
@@ -181,7 +201,7 @@ static void scale(std::vector<std::string>& args) {
     if (args.size() != 5)
         throw std::invalid_argument("invalid argument number");
     int id = from_string(args[1]);
-    float cx = from_string<float>(args[2]), cy = from_string<float>(args[3]);
+    float cx = read_x(args[2]), cy = read_y(args[3]);
     float s = from_string<float>(args[4]);
     canvas[id].scale(cx, cy, s);
 }
@@ -190,14 +210,15 @@ static void clip(std::vector<std::string>& args) {
     if (args.size() != 7)
         throw std::invalid_argument("invalid argument number");
     int id = from_string(args[1]);
-    float x1 = from_string<float>(args[2]), y1 = from_string<float>(args[3]);
-    float x2 = from_string<float>(args[4]), y2 = from_string<float>(args[5]);
+    float x1 = read_x(args[2]), y1 = read_y(args[3]);
+    float x2 = read_x(args[4]), y2 = read_y(args[5]);
     Paint::LineClippingAlgorithm algo = clipalg.at(args[6]);
     dynamic_cast<Paint::Line&>(canvas[id]).clip(x1, y1, x2, y2, algo);
 }
 
 static const std::unordered_map<std::string, CommandHandler> handler {
     { "resetCanvas",    resetCanvas     },
+    { "resize",         resize          },
     { "saveCanvas",     saveCanvas      },
     { "setColor",       setColor        },
     { "drawLine",       drawLine        },

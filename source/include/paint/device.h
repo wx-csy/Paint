@@ -27,6 +27,8 @@ namespace Paint {
             width(width), height(height) { }
 
     public:
+        size_t getWidth() { return width; }
+        size_t getHeight() { return height; }
         virtual RGBColor getPixel(ssize_t x, ssize_t y) const = 0;
         RGBColor getPixel(PointI pt) const {
             return getPixel(pt.x, pt.y);

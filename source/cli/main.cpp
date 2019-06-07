@@ -16,9 +16,42 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+bool mathcoord = false;
 void batch();
 
+[[noreturn]] void usage(const char *prog) {
+    std::fprintf(stderr,
+        "Usage: %s [ -i ] [ input ]\n"
+        "\n"
+        "-i\tUse mathematical coordinate system.\n"
+        "input\tThe input file. If omitted, read from stdin.\n",
+        prog);
+    exit(EXIT_FAILURE);
+}
+
+void parsearg(int argc, char *argv[]) {
+    for (int i = 1; i < argc; i++) {
+        if (argv[i][0] == '-') {
+            if (std::strcmp(argv[i], "-i") == 0) {
+                mathcoord = true;
+            } else {
+                usage(argv[0]);
+            }
+        } else {
+            if (std::freopen(argv[i], "r", stdin) == nullptr) {
+                fprintf(stderr, "failed to open file '%s'\n", argv[1]);
+                exit(EXIT_FAILURE);
+            }
+        }
+    }
+}
+
 int main(int argc, char *argv[]) {
+    parsearg(argc, argv);
     batch();
     return 0;    
 }

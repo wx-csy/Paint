@@ -1,8 +1,6 @@
 build/
+picture/
 cmake-build-debug/
 .idea/
-**.user
-source/gui/*
-!source/gui/Paint-GUI
-gui
+/gui
 **.pdf

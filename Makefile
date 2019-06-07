@@ -23,7 +23,7 @@ LDFLAGS = $(CXXFLAGS)
 SRCS = $(shell find $(SRC_DIR)/ $(UI_DIR)/ -name "*.cpp")
 OBJS = $(SRCS:%.cpp=$(BUILD_DIR)/%.o)
 
-.DEFAULT_GOAL = $(BINARY_GUI)
+.DEFAULT_GOAL = $(BINARY)
 .PHONY : clean run doc package targets
 
 $(BUILD_DIR)/%.o : %.cpp
