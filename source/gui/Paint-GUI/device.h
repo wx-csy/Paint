@@ -36,7 +36,7 @@ public:
     int getHeight() { return int(height); }
 
     void setPixel(ssize_t x, ssize_t y, Paint::RGBColor color) override {
-        if (x < 0 || y < 0 || size_t(x) >= width || size_t(y) >= height)
+        if (x < 0 || y < 0 || x >= ssize_t(width) || y >= ssize_t(height))
             return;
         image.setPixel(x, y, paint_color_to_qrgb(color));
     }
@@ -52,6 +52,8 @@ public:
         pixmap.convertFromImage(image);
         return pixmap;
     }
+
+    ~QImageDevice() override = default;
 };
 
 #endif // QIMAGEDEVICE_H

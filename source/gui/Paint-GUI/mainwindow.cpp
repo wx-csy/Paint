@@ -6,6 +6,8 @@
 #include <QInputDialog>
 #include <QLayout>
 #include <QColorDialog>
+#include <QTextStream>
+#include <QDesktopServices>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -41,15 +43,35 @@ void MainWindow::render()
 void MainWindow::updateList() {
     QStringList list;
     for (auto& pr : canvas.primitives)
-        list << pr.second->to_string().c_str();
+        list << (std::to_string(pr.first) + " " + pr.second->to_string()).c_str();
     model.setStringList(list);
 }
 
 void MainWindow::on_actionAbout_Paint_triggered()
 {
-    QMessageBox::information(this, "About Paint", "Paint, a simple rasterization tool\nCopyright (C) 2019 Chen Shaoyuan\n");
+    QMessageBox::information(this, "About Paint",
+        "Paint, a simple rasterization tool\n"
+        "Copyright (C) 2019 Chen Shaoyuan\n"
+        "\n"
+        "This program is free software: you can redistribute it and/or modify "
+        "it under the terms of the GNU General Public License as published by "
+        "the Free Software Foundation, either version 3 of the License, or "
+        "(at your option) any later version.\n"
+        "\n"
+        "This program is distributed in the hope that it will be useful, "
+        "but WITHOUT ANY WARRANTY; without even the implied warranty of "
+        "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the "
+        "GNU General Public License for more details.\n"
+        "\n"
+        "You should have received a copy of the GNU General Public License "
+        "along with this program. If not, see <http://www.gnu.org/licenses/>.");
 }
 
+
+void MainWindow::on_actionOfficial_Website_triggered()
+{
+    QDesktopServices::openUrl(QUrl("https://github.com/wx-csy/Paint"));
+}
 
 void MainWindow::command_status_handler(Command::status status)
 {
@@ -57,6 +79,7 @@ void MainWindow::command_status_handler(Command::status status)
     case Command::ABORT :
         current_command = nullptr;
         render();
+        updateList();
         ui->statusBar->showMessage("Aborted.");
         break;
     case Command::DONE :
@@ -107,36 +130,31 @@ void MainWindow::on_cmdResize_clicked()
 void MainWindow::on_cmdLine_clicked()
 {
     if (current_command) command_status_handler(current_command->abort());
-    current_command.reset(new LineCommand(canvas, color, Paint::Line::Algorithm::Bresenham));
-    ui->statusBar->showMessage("Drawing line ...");
+    current_command.reset(new LineCommand(canvas, color, Paint::Line::Algorithm::Bresenham, ui->statusBar));
 }
 
 void MainWindow::on_cmdPolygon_clicked()
 {
     if (current_command) command_status_handler(current_command->abort());
-    current_command.reset(new PolygonCommand(canvas, color, Paint::Line::Algorithm::Bresenham));
-    ui->statusBar->showMessage("Drawing polygon ...");
+    current_command.reset(new PolygonCommand(canvas, color, Paint::Line::Algorithm::Bresenham, ui->statusBar));
 }
 
 void MainWindow::on_cmdEllipse_clicked()
 {
     if (current_command) command_status_handler(current_command->abort());
-    current_command.reset(new EllipseCommand(canvas, color));
-    ui->statusBar->showMessage("Drawing ellipse ...");
+    current_command.reset(new EllipseCommand(canvas, color, ui->statusBar));
 }
 
 void MainWindow::on_cmdBezier_clicked()
 {
     if (current_command) command_status_handler(current_command->abort());
-    current_command.reset(new BezierCommand(canvas, color));
-    ui->statusBar->showMessage("Drawing Bezier curve ...");
+    current_command.reset(new BezierCommand(canvas, color, ui->statusBar));
 }
 
 void MainWindow::on_cmdBSpline_clicked()
 {
     if (current_command) command_status_handler(current_command->abort());
-    current_command.reset(new BSplineCommand(canvas, color));
-    ui->statusBar->showMessage("Drawing B-Spline curve...");
+    current_command.reset(new BSplineCommand(canvas, color, ui->statusBar));
 }
 
 void MainWindow::setColor(Paint::RGBColor color)
@@ -153,4 +171,26 @@ void MainWindow::on_cmdChangeColor_clicked()
     auto newcolor = QColorDialog::getColor(Qt::white, this);
     if (newcolor.isValid())
         setColor(Paint::RGBColor(newcolor.red(), newcolor.green(), newcolor.blue()));
+}
+
+int MainWindow::getSeletectedPrimitiveIndex() {
+    int rid = ui->primitiveList->currentIndex().row(), eid;
+    if (rid < 0) return -1;
+    // QTextStream takes a mutable pointer to QString.
+    QString str(model.stringList().at(rid));
+    QTextStream ss(&str);
+    int id; ss >> id;
+    if (canvas.primitives.count(id) == 0) return -1;
+    return id;
+}
+
+void MainWindow::on_cmdMove_clicked()
+{
+    if (current_command) command_status_handler(current_command->abort());
+    int eid = getSeletectedPrimitiveIndex();
+    if (eid < 0) {
+        QMessageBox::warning(this, "Paint", "Please select exactly one primitive!");
+        return;
+    }
+    current_command.reset(new MoveCommand(canvas, eid, ui->statusBar));
 }

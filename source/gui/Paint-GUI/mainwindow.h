@@ -45,10 +45,15 @@ private slots:
 
     void on_cmdChangeColor_clicked();
 
+    void on_actionOfficial_Website_triggered();
+
+    void on_cmdMove_clicked();
+
 private:
     void command_status_handler(Command::status status);
     void setColor(Paint::RGBColor color);
     void updateList();
+    int getSeletectedPrimitiveIndex();
 
     std::unique_ptr<Command> current_command;
     Ui::MainWindow *ui;

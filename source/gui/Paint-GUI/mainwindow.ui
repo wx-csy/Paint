@@ -14,7 +14,7 @@
    <bool>true</bool>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>QtPaint</string>
   </property>
   <property name="layoutDirection">
    <enum>Qt::LeftToRight</enum>
@@ -105,9 +105,18 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionOfficial_Website"/>
     <addaction name="actionAbout_Paint"/>
    </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionLine_Algorithm"/>
+    <addaction name="actionClip_Algorithm"/>
+   </widget>
    <addaction name="menuFiles"/>
+   <addaction name="menuSettings"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget">
@@ -133,6 +142,9 @@
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <widget class="QPushButton" name="cmdResize">
+       <property name="statusTip">
+        <string>Resize the canvas.</string>
+       </property>
        <property name="text">
         <string>Resize</string>
        </property>
@@ -153,6 +165,9 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="statusTip">
+        <string>Draw a line.</string>
+       </property>
        <property name="text">
         <string>Line</string>
        </property>
@@ -169,6 +184,9 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="statusTip">
+        <string>Draw a polyon.</string>
+       </property>
        <property name="text">
         <string>Polygon</string>
        </property>
@@ -176,6 +194,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="cmdEllipse">
+       <property name="statusTip">
+        <string>Draw an ellipse.</string>
+       </property>
        <property name="text">
         <string>Ellipse</string>
        </property>
@@ -189,6 +210,9 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="statusTip">
+        <string>Draw a Bezier curve.</string>
+       </property>
        <property name="text">
         <string>Bezier</string>
        </property>
@@ -196,8 +220,58 @@
      </item>
      <item>
       <widget class="QPushButton" name="cmdBSpline">
+       <property name="statusTip">
+        <string>Draw a B-Spline curve.</string>
+       </property>
        <property name="text">
         <string>B-Spline</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="Line" name="line_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cmdMove">
+       <property name="statusTip">
+        <string>Move (translate) a primitive.</string>
+       </property>
+       <property name="text">
+        <string>Move</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cmdRotate">
+       <property name="statusTip">
+        <string>Rotate a primitive.</string>
+       </property>
+       <property name="text">
+        <string>Rotate</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cmdScale">
+       <property name="statusTip">
+        <string>Scale a primitive.</string>
+       </property>
+       <property name="text">
+        <string>Scale</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cmdClip">
+       <property name="statusTip">
+        <string>Clip a line.</string>
+       </property>
+       <property name="text">
+        <string>Clip</string>
        </property>
       </widget>
      </item>
@@ -216,6 +290,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="cmdChangeColor">
+       <property name="statusTip">
+        <string>Change color.</string>
+       </property>
        <property name="text">
         <string>Color</string>
        </property>
@@ -232,11 +309,6 @@
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionOpen">
-   <property name="text">
-    <string>Open</string>
-   </property>
-  </action>
   <action name="actionSave">
    <property name="text">
     <string>Save</string>
@@ -245,6 +317,33 @@
   <action name="actionAbout_Paint">
    <property name="text">
     <string>About Paint</string>
+   </property>
+  </action>
+  <action name="actionLine_Algorithm">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Line Algorithm</string>
+   </property>
+   <property name="statusTip">
+    <string>Change line drawing algorithm.</string>
+   </property>
+  </action>
+  <action name="actionClip_Algorithm">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Clip Algorithm</string>
+   </property>
+   <property name="statusTip">
+    <string>Change line clipping algorithm.</string>
+   </property>
+  </action>
+  <action name="actionOfficial_Website">
+   <property name="text">
+    <string>Official Website</string>
    </property>
   </action>
  </widget>
