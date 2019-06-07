@@ -8,6 +8,7 @@
 #include <QColorDialog>
 #include <QTextStream>
 #include <QDesktopServices>
+#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -17,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->label->setMouseTracking(true);
     ui->label->resize(canvas.getWidth(), canvas.getHeight());
     ui->splitter->setStretchFactor(0, 2);
+    ui->scrollAreaWidgetContents->setMinimumSize(canvas.getWidth(), canvas.getHeight());
     connect(ui->label, &MovableLabel::mouseMoved, this, &MainWindow::canvasMouseMoved);
     connect(ui->label, &MovableLabel::mouseClicked, this, &MainWindow::canvasMouseClicked);
     connect(ui->label, &MovableLabel::mouseRightClicked, this, &MainWindow::canvasMouseRightClicked);
@@ -130,13 +132,13 @@ void MainWindow::on_cmdResize_clicked()
 void MainWindow::on_cmdLine_clicked()
 {
     if (current_command) command_status_handler(current_command->abort());
-    current_command.reset(new LineCommand(canvas, color, Paint::Line::Algorithm::Bresenham, ui->statusBar));
+    current_command.reset(new LineCommand(canvas, color, line_drawing_algo, ui->statusBar));
 }
 
 void MainWindow::on_cmdPolygon_clicked()
 {
     if (current_command) command_status_handler(current_command->abort());
-    current_command.reset(new PolygonCommand(canvas, color, Paint::Line::Algorithm::Bresenham, ui->statusBar));
+    current_command.reset(new PolygonCommand(canvas, color, line_drawing_algo, ui->statusBar));
 }
 
 void MainWindow::on_cmdEllipse_clicked()
@@ -193,4 +195,134 @@ void MainWindow::on_cmdMove_clicked()
         return;
     }
     current_command.reset(new MoveCommand(canvas, eid, ui->statusBar));
+}
+
+void MainWindow::on_cmdRotate_clicked()
+{
+    if (current_command) command_status_handler(current_command->abort());
+    int eid = getSeletectedPrimitiveIndex();
+    if (eid < 0) {
+        QMessageBox::warning(this, "Paint", "Please select exactly one primitive!");
+        return;
+    }
+    current_command.reset(new RotateCommand(canvas, eid, ui->statusBar));
+}
+
+void MainWindow::on_cmdScale_clicked()
+{
+    if (current_command) command_status_handler(current_command->abort());
+    int eid = getSeletectedPrimitiveIndex();
+    if (eid < 0) {
+        QMessageBox::warning(this, "Paint", "Please select exactly one primitive!");
+        return;
+    }
+    current_command.reset(new ScaleCommand(canvas, eid, ui->statusBar));
+}
+
+void MainWindow::on_cmdClip_clicked()
+{
+    if (current_command) command_status_handler(current_command->abort());
+    int eid = getSeletectedPrimitiveIndex();
+    if (eid < 0) {
+        QMessageBox::warning(this, "Paint", "Please select exactly one primitive!");
+        return;
+    }
+    try {
+        Paint::Line &line = dynamic_cast<Paint::Line&>(*canvas.primitives[eid]);
+        current_command.reset(new ClipCommand(canvas, line, clip_algo, ui->statusBar));
+    } catch (std::bad_cast&) {
+        QMessageBox::warning(this, "Paint", "Clip operation is applicable to line only!");
+        return;
+    }
+}
+
+void MainWindow::on_cmdDelete_clicked()
+{
+    if (current_command) command_status_handler(current_command->abort());
+    int eid = getSeletectedPrimitiveIndex();
+    if (eid < 0) {
+        QMessageBox::warning(this, "Paint", "Please select exactly one primitive!");
+        return;
+    }
+    canvas.primitives.erase(eid);
+    command_status_handler(Command::DONE);
+}
+
+void MainWindow::on_actionResize_triggered()
+{
+    on_cmdResize_clicked();
+}
+
+void MainWindow::on_actionLine_triggered()
+{
+    on_cmdLine_clicked();
+}
+
+void MainWindow::on_actionPolygon_triggered()
+{
+    on_cmdPolygon_clicked();
+}
+
+void MainWindow::on_actionEllipse_triggered()
+{
+    on_cmdEllipse_clicked();
+}
+
+void MainWindow::on_actionB_Spline_triggered()
+{
+    on_cmdBSpline_clicked();
+}
+
+void MainWindow::on_actionBezier_triggered()
+{
+    on_cmdBezier_clicked();
+}
+
+void MainWindow::on_actionMove_triggered()
+{
+    on_cmdMove_clicked();
+}
+
+void MainWindow::on_actionRotate_triggered()
+{
+    on_cmdRotate_clicked();
+}
+
+void MainWindow::on_actionScale_triggered()
+{
+    on_cmdScale_clicked();
+}
+
+void MainWindow::on_actionDelete_triggered()
+{
+    on_cmdDelete_clicked();
+}
+
+void MainWindow::on_actionChange_Color_triggered()
+{
+    on_cmdChangeColor_clicked();
+}
+
+void MainWindow::on_actionSave_triggered()
+{
+    QString filename = QFileDialog::getSaveFileName(this, "Save File");
+    canvas.image.save(filename);
+}
+
+void MainWindow::on_actionLine_Algorithm_toggled(bool arg1)
+{
+    if (arg1) {
+        line_drawing_algo = Paint::Line::Algorithm::DDA;
+    } else {
+        line_drawing_algo = Paint::Line::Algorithm::Bresenham;
+    }
+}
+
+void MainWindow::on_actionClip_Algorithm_toggled(bool arg1)
+{
+    if (arg1) {
+        clip_algo = Paint::LineClippingAlgorithm::CohenSutherland;
+    } else {
+        clip_algo = Paint::LineClippingAlgorithm::LiangBarsky;
+    }
 }

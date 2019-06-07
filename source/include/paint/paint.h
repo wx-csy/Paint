@@ -58,6 +58,8 @@ namespace Paint {
         Point& operator -= (Point rhs) { x -= rhs.x; y -= rhs.y; return *this; }
         Point& operator *= (T k) { x *= k; y *= k; return *this; }
         T lmax() { return std::max(std::abs(x), std::abs(y)); }
+        double abs() { return hypot(x, y); }
+        double arg() { return atan2(y, x); }
 
         std::string to_string() {
             return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";

@@ -54,12 +54,12 @@ static inline uint8_t cs_encode(Paint::PointF p, float xmin, float xmax, float y
 
 static inline Paint::PointF reg_x(Paint::PointF p1, Paint::PointF p2, float x) {
     float f = (x - p1.x) / (p2.x - p1.x);
-    return Paint::PointF(x, f * p1.y + (1 - f) * p2.y);
+    return Paint::PointF(x, (1 - f) * p1.y + f * p2.y);
 }
 
 static inline Paint::PointF reg_y(Paint::PointF p1, Paint::PointF p2, float y) {
     float f = (y - p1.y) / (p2.y - p1.y);
-    return Paint::PointF(f * p1.x + (1 - f) * p2.x, y);
+    return Paint::PointF((1 - f) * p1.x + f * p2.x, y);
 }
 
 static std::pair<Paint::PointF, Paint::PointF>
@@ -73,10 +73,10 @@ static std::pair<Paint::PointF, Paint::PointF>
     // let p1 be outside the region
     if (c1 == 0) { std::swap(p1, p2); std::swap(c1, c2); }
     switch (__builtin_ctz(c1)) {
-    case XMIN_LEFT:     p1 = reg_x(p1, p2, x1); break;
-    case XMAX_RIGHT:    p1 = reg_x(p1, p2, x2); break;
-    case YMIN_DOWN:     p1 = reg_y(p1, p2, y1); break;
-    case YMAX_UP:       p1 = reg_y(p1, p2, y2); break;
+    case XMIN_LEFT:     p1 = reg_x(p1, p2, std::min(x1, x2)); break;
+    case XMAX_RIGHT:    p1 = reg_x(p1, p2, std::max(x1, x2)); break;
+    case YMIN_DOWN:     p1 = reg_y(p1, p2, std::min(y1, y2)); break;
+    case YMAX_UP:       p1 = reg_y(p1, p2, std::max(y1, y2)); break;
     default: assert(!"unexpected region code");
     }
     return cohen_sutherland(p1, p2, x1, x2, y1, y2);

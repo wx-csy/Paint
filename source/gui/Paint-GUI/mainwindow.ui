@@ -115,7 +115,28 @@
     <addaction name="actionLine_Algorithm"/>
     <addaction name="actionClip_Algorithm"/>
    </widget>
+   <widget class="QMenu" name="menuDrawing">
+    <property name="title">
+     <string>Paint</string>
+    </property>
+    <addaction name="actionResize"/>
+    <addaction name="separator"/>
+    <addaction name="actionLine"/>
+    <addaction name="actionPolygon"/>
+    <addaction name="actionEllipse"/>
+    <addaction name="actionBezier"/>
+    <addaction name="actionB_Spline"/>
+    <addaction name="separator"/>
+    <addaction name="actionMove"/>
+    <addaction name="actionRotate"/>
+    <addaction name="actionScale"/>
+    <addaction name="actionClip"/>
+    <addaction name="actionDelete"/>
+    <addaction name="separator"/>
+    <addaction name="actionChange_Color"/>
+   </widget>
    <addaction name="menuFiles"/>
+   <addaction name="menuDrawing"/>
    <addaction name="menuSettings"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -276,6 +297,19 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="cmdDelete">
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="statusTip">
+        <string>Delete primitive.</string>
+       </property>
+       <property name="text">
+        <string>Delete</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -324,10 +358,13 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Line Algorithm</string>
+    <string>Use DDA for Line Drawing</string>
    </property>
    <property name="statusTip">
     <string>Change line drawing algorithm.</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::TextHeuristicRole</enum>
    </property>
   </action>
   <action name="actionClip_Algorithm">
@@ -335,7 +372,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Clip Algorithm</string>
+    <string>Use Cohen-Sutherland for Line Clipping</string>
    </property>
    <property name="statusTip">
     <string>Change line clipping algorithm.</string>
@@ -344,6 +381,66 @@
   <action name="actionOfficial_Website">
    <property name="text">
     <string>Official Website</string>
+   </property>
+  </action>
+  <action name="actionLine">
+   <property name="text">
+    <string>Line</string>
+   </property>
+  </action>
+  <action name="actionPolygon">
+   <property name="text">
+    <string>Polygon</string>
+   </property>
+  </action>
+  <action name="actionEllipse">
+   <property name="text">
+    <string>Ellipse</string>
+   </property>
+  </action>
+  <action name="actionBezier">
+   <property name="text">
+    <string>Bezier</string>
+   </property>
+  </action>
+  <action name="actionB_Spline">
+   <property name="text">
+    <string>B-Spline</string>
+   </property>
+  </action>
+  <action name="actionResize">
+   <property name="text">
+    <string>Resize</string>
+   </property>
+  </action>
+  <action name="actionMove">
+   <property name="text">
+    <string>Move</string>
+   </property>
+  </action>
+  <action name="actionRotate">
+   <property name="text">
+    <string>Rotate</string>
+   </property>
+  </action>
+  <action name="actionScale">
+   <property name="text">
+    <string>Scale</string>
+   </property>
+  </action>
+  <action name="actionClip">
+   <property name="text">
+    <string>Clip</string>
+   </property>
+  </action>
+  <action name="actionDelete">
+   <property name="text">
+    <string>Delete</string>
+   </property>
+  </action>
+  <action name="actionChange_Color">
+   <property name="text">
+    <string>Change Color</string>
    </property>
   </action>
  </widget>

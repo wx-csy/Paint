@@ -30,7 +30,6 @@ SOURCES += \
         command.cpp \
         main.cpp \
         mainwindow.cpp \
-        movablelabel.cpp \
         $$PWD/../../src/*.cpp \
         $$PWD/../../src/primitive/*.cpp
 

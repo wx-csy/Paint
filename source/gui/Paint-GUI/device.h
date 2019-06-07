@@ -16,10 +16,9 @@ static inline QRgb paint_color_to_qrgb(Paint::RGBColor color) {
 
 class QImageDevice : public Paint::ImageDevice
 {
-private:
+public:
     QImage image;
 
-public:
     explicit QImageDevice(size_t width = 800, size_t height = 600) :
         ImageDevice(width, height), image((int)width, (int)height, QImage::Format_RGB32)
     {
