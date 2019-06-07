@@ -165,6 +165,7 @@ namespace Paint {
         void translate(float dx, float dy) override;
         void rotate(float x, float y, float rdeg) override;
         void scale(float x, float y, float s) override;
+        void update_knot();
 
         std::string to_string() override {
             return "BSpline " + color.to_string();

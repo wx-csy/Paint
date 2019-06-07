@@ -57,11 +57,13 @@ void MainWindow::command_status_handler(Command::status status)
     case Command::ABORT :
         current_command = nullptr;
         render();
+        ui->statusBar->showMessage("Aborted.");
         break;
     case Command::DONE :
         current_command = nullptr;
         render();
         updateList();
+        ui->statusBar->showMessage("Done.");
         break;
     case Command::CONTINUE :
         break;
@@ -106,30 +108,35 @@ void MainWindow::on_cmdLine_clicked()
 {
     if (current_command) command_status_handler(current_command->abort());
     current_command.reset(new LineCommand(canvas, color, Paint::Line::Algorithm::Bresenham));
+    ui->statusBar->showMessage("Drawing line ...");
 }
 
 void MainWindow::on_cmdPolygon_clicked()
 {
     if (current_command) command_status_handler(current_command->abort());
     current_command.reset(new PolygonCommand(canvas, color, Paint::Line::Algorithm::Bresenham));
+    ui->statusBar->showMessage("Drawing polygon ...");
 }
 
 void MainWindow::on_cmdEllipse_clicked()
 {
     if (current_command) command_status_handler(current_command->abort());
     current_command.reset(new EllipseCommand(canvas, color));
+    ui->statusBar->showMessage("Drawing ellipse ...");
 }
 
 void MainWindow::on_cmdBezier_clicked()
 {
     if (current_command) command_status_handler(current_command->abort());
     current_command.reset(new BezierCommand(canvas, color));
+    ui->statusBar->showMessage("Drawing Bezier curve ...");
 }
 
 void MainWindow::on_cmdBSpline_clicked()
 {
     if (current_command) command_status_handler(current_command->abort());
     current_command.reset(new BSplineCommand(canvas, color));
+    ui->statusBar->showMessage("Drawing B-Spline curve...");
 }
 
 void MainWindow::setColor(Paint::RGBColor color)

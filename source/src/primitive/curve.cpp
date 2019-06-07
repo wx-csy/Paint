@@ -148,8 +148,14 @@ namespace Paint {
     //
     BSpline::BSpline(std::vector<PointF> pts, RGBColor color, size_t order) :
             ParametricCurve(color), order(order), points(std::move(pts)) {
-        if (this->points.size() <= order)
-            throw std::invalid_argument("number of points must be greater than order");
+        // if (this->points.size() <= order)
+        //    throw std::invalid_argument("number of points must be greater than order");
+        update_knot();
+    }
+
+    void BSpline::update_knot() {
+        knot.clear();
+        if (this->points.size() <= order) return;
         size_t nknot = this->points.size() - order;
         for (size_t i = 0; i < order; i++) knot.push_back(0.0f);
         for (size_t i = 0; i <= nknot; i++) knot.push_back(1.0f * i / nknot);
@@ -157,24 +163,34 @@ namespace Paint {
     }
 
     PointF BSpline::eval(float t) {
-        if (t <= knot.front()) return points.front();
-        if (t >= knot.back()) return points.back();
-        std::vector<float> w(knot.size() - 1);
-        for (size_t i = 0; i < knot.size() - 1; i++)
-            w[i] = (t >= knot[i] and t < knot[i+1] ? 1.0f : 0.0f);
-        auto safediv = [](float x, float y) -> float {
-            return (y == 0.0f ? 0.0f : x / y);
-        };
-        for (size_t r = 1; r <= order; r++) {
-            for (size_t i = 0; i < w.size() - 1; i++) {
-                w[i] =
-                    w[i] * safediv(t - knot[i], knot[i+r] - knot[i]) +
-                    w[i+1] * safediv(knot[i+r+1] - t, knot[i+r+1] - knot[i+1]);
+        if (points.size() <= order) { // draw Bezier curve
+            std::vector<PointF> pts(points.begin(), points.end());
+            while (pts.size() > 1) {
+                for (size_t i = 0; i < pts.size() - 1; i++)
+                    pts[i] = t * pts[i] + (1.0 - t) * pts[i+1];
+                pts.pop_back();
             }
-            w.pop_back();
+            return pts[0];
+        } else { // draw B-Spline
+            if (t <= knot.front()) return points.front();
+            if (t >= knot.back()) return points.back();
+            std::vector<float> w(knot.size() - 1);
+            for (size_t i = 0; i < knot.size() - 1; i++)
+                w[i] = (t >= knot[i] and t < knot[i + 1] ? 1.0f : 0.0f);
+            auto safediv = [](float x, float y) -> float {
+                return (y == 0.0f ? 0.0f : x / y);
+            };
+            for (size_t r = 1; r <= order; r++) {
+                for (size_t i = 0; i < w.size() - 1; i++) {
+                    w[i] =
+                        w[i] * safediv(t - knot[i], knot[i + r] - knot[i]) +
+                        w[i + 1] * safediv(knot[i + r + 1] - t, knot[i + r + 1] - knot[i + 1]);
+                }
+                w.pop_back();
+            }
+            // assert(w.size() == points.size());
+            return inner_product(w.begin(), w.end(), points.begin(), PointF());
         }
-        // assert(w.size() == points.size());
-        return inner_product(w.begin(), w.end(), points.begin(), PointF());
     }
 
     void BSpline::translate(float dx, float dy) {
