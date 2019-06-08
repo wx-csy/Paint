@@ -1,5 +1,48 @@
 # 系统使用说明书
 
+## 源代码结构
+
+源代码在`source`文件夹内。整个工程分为前端和后端两个部分，代码结构如下：
+
+```
+.
+├── cli 	# CLI前端代码
+│   ├── batch.cpp
+│   └── main.cpp
+├── gui		# GUI前端代码（使用Qt）
+│   └── Paint-GUI
+│       ├── command.cpp
+│       ├── command.h
+│       ├── device.h
+│       ├── main.cpp
+│       ├── mainwindow.cpp
+│       ├── mainwindow.h
+│       ├── mainwindow.ui
+│       ├── Makefile
+│       ├── movablelabel.h
+│       ├── Paint-GUI
+│       ├── Paint-GUI.pro
+│       └── Paint-GUI.pro.user
+├── include	# 头文件
+│   ├── libbmp.h
+│   └── paint
+│       ├── canvas.h
+│       ├── common.h
+│       ├── device.h
+│       ├── paint.h
+│       ├── primitive.h
+│       └── util.h
+└── src		# 后端源代码
+    ├── libbmp.cpp
+    └── primitive
+        ├── algo.h
+        ├── clip.cpp
+        ├── curve.cpp
+        └── line.cpp
+```
+
+
+
 ## 编译方法
 
 在 `binary` 文件夹内有已经编译好可执行文件。由于不同机器运行环境和配置的差异，预编译的可执行文件不保证在所有机器上都可用，如果预编译的文件无法打开，请尝试在本机重新编译。
@@ -12,7 +55,7 @@
 - Qt和QMake工具： QMake version 3.1, using Qt version 5.9.5
 - shell：GNU bash, version 4.4.19
 
-如果需要编译目标文件，请切换到根目录并输入
+本系统附带Makefile文件。如果需要编译目标文件，请切换到根目录并输入
 
 ```bash
 make targets
