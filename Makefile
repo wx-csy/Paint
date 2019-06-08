@@ -73,7 +73,7 @@ package : doc targets $(BINARY) $(BINARY_GUI)
 	rm -f $(STUID)_*月报告.zip
 	-@cd source/gui/Paint-GUI && make clean
 	mkdir $(PACKAGE_DIR)
-	cp -r $(BINARY_DIR) picture source README.md LICENSE Makefile $(PACKAGE_DIR)
+	cp -r $(BINARY_DIR) picture source doc README.md LICENSE Makefile $(PACKAGE_DIR)
 	cp report.pdf $(PACKAGE_DIR)/$(STUID)_$(MONTH)月报告.pdf
 	cp manual.md $(PACKAGE_DIR)/$(STUID)_系统使用说明.md
 	cp manual.pdf $(PACKAGE_DIR)/$(STUID)_系统使用说明.pdf
