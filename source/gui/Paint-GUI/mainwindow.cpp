@@ -121,8 +121,11 @@ void MainWindow::canvasMouseRightClicked(int x, int y)
 
 void MainWindow::on_cmdResize_clicked()
 {
-    int width = QInputDialog::getInt(this, "Resize", "Please specify width of the canvas:", 600, 300, 1200);
-    int height = QInputDialog::getInt(this, "Resize", "Please specify height of the canvas:", 800, 300, 1200);
+    bool ok;
+    int width = QInputDialog::getInt(this, "Resize", "Please specify width of the canvas:", 800, 100, 1200, 100, &ok);
+    if (!ok) return;
+    int height = QInputDialog::getInt(this, "Resize", "Please specify height of the canvas:", 600, 100, 1200, 100, &ok);
+    if (!ok) return;
     ui->label->resize(width, height);
     ui->scrollAreaWidgetContents->setMinimumSize(width, height);
     canvas.reset(width, height);

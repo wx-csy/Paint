@@ -2,6 +2,7 @@ TARGET_NAME = painter
 TARGET_NAME_GUI = painter-gui
 STUID         = 161240004
 MONTH         = $(shell date +%m | sed 's/^0*//')
+PACKAGE_DIR   = $(STUID)_$(MONTH)月报告
 PACKAGE       = $(STUID)_$(MONTH)月报告.zip
 BUILD_DIR     = build
 SRC_DIR       = source/src
@@ -15,8 +16,8 @@ CXX     = g++
 LD      = g++
 TEX	= xelatex
 BIBTEX	= bibtex
-CXXFLAGS  += -std=gnu++14 -Wall -ggdb -MMD -O1
-CXXFLAGS  += -fsanitize=undefined -fsanitize=address
+CXXFLAGS  += -std=gnu++14 -Wall -pipe -MMD -O1
+# CXXFLAGS  += -fsanitize=undefined -fsanitize=address
 CXXFLAGS  += -I ./$(INCLUDE_DIR)
 LDFLAGS = $(CXXFLAGS)
 
@@ -55,7 +56,7 @@ doc : $(BUILD_DIR)/report.pdf
 
 clean :
 	@echo - [RM] $(BUILD_DIR) $(BINARY_DIR)
-	@rm -rf $(BUILD_DIR) $(BINARY_DIR)
+	@rm -rf $(BUILD_DIR) $(BINARY_DIR) $(PACKAGE_DIR)
 	-@cd source/gui/Paint-GUI && make clean
 
 $(BINARY_GUI) : 
@@ -71,9 +72,13 @@ targets : $(BINARY) $(BINARY_GUI)
 package : doc targets $(BINARY) $(BINARY_GUI)
 	rm -f $(STUID)_*月报告.zip
 	-@cd source/gui/Paint-GUI && make clean
-	zip -r $(PACKAGE) $(BINARY_DIR) picture source README.md report.pdf LICENSE Makefile
-	printf "@ report.pdf\n@=$(STUID)_$(MONTH)月报告.pdf\n" | zipnote -w $(PACKAGE)
-	printf "@ README.md\n@=$(STUID)_系统使用说明.md\n" | zipnote -w $(PACKAGE)
+	mkdir $(PACKAGE_DIR)
+	cp -r $(BINARY_DIR) picture source README.md LICENSE Makefile $(PACKAGE_DIR)
+	cp report.pdf $(PACKAGE_DIR)/$(STUID)_$(MONTH)月报告.pdf
+	cp manual.md $(PACKAGE_DIR)/$(STUID)_系统使用说明.md
+	cp manual.pdf $(PACKAGE_DIR)/$(STUID)_系统使用说明.pdf
+	zip -r $(PACKAGE) $(PACKAGE_DIR)
+	rm -rf $(PACKAGE_DIR)
 
 .DELETE_ON_ERROR : 
 

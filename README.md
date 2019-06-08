@@ -16,7 +16,7 @@ Softwares used to compile and run:
 To build binary executable, type
 
 ```bash
-make targest
+make targets
 ```
 
 The target file is `build/painter` (CLI) and `build/painter-gui` (GUI).
@@ -30,3 +30,6 @@ make doc
 ##  License
 
 This software is licensed under GNU GPL v3.
+
+​	
+

@@ -161,7 +161,7 @@ namespace Paint {
     public:
         size_t order;
         std::vector<PointF> points;
-        BSpline(std::vector<PointF> points, RGBColor color, size_t order = 3);
+        BSpline(std::vector<PointF> points, RGBColor color, size_t order = 4);
         void translate(float dx, float dy) override;
         void rotate(float x, float y, float rdeg) override;
         void scale(float x, float y, float s) override;

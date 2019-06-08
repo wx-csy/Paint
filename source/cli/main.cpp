@@ -19,16 +19,19 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <unistd.h>
 
+static bool opened = false;
 bool mathcoord = false;
 void batch();
 
 [[noreturn]] void usage(const char *prog) {
     std::fprintf(stderr,
-        "Usage: %s [ -i ] [ input ]\n"
+        "Usage: %s [ -i ] [ input [ output_dir ] ]\n"
         "\n"
         "-i\tUse mathematical coordinate system.\n"
-        "input\tThe input file. If omitted, read from stdin.\n",
+        "input\tThe input file. If omitted, read from stdin.\n"
+        "output_dir\tThe output directory. If omitted, output to current working directory.\n",
         prog);
     exit(EXIT_FAILURE);
 }
@@ -42,9 +45,17 @@ void parsearg(int argc, char *argv[]) {
                 usage(argv[0]);
             }
         } else {
-            if (std::freopen(argv[i], "r", stdin) == nullptr) {
-                fprintf(stderr, "failed to open file '%s'\n", argv[1]);
-                exit(EXIT_FAILURE);
+            if (!opened) {
+                if (std::freopen(argv[i], "r", stdin) == nullptr) {
+                    fprintf(stderr, "failed to open file '%s'\n", argv[i]);
+                    exit(EXIT_FAILURE);
+                }
+                opened = true;
+            } else {
+                if (chdir(argv[i]) < 0) {
+                    perror("chdir");
+                    exit(EXIT_FAILURE);
+                }
             }
         }
     }

@@ -394,7 +394,7 @@ CLI前端中实现了\lstinline|class ImageDevice|的子类\lstinline|class BmpD
 
 \subsection{GUI前端介绍}
 
-本系统的GUI前端使用Qt5框架\cite{qtdoc}编写完成。整个图形界面分为菜单栏（上侧），工具栏（左侧），绘图区（中部），图元列表（右侧）和状态栏（下册）这几部分。图形界面使用Qt Creator工具设计。
+本系统的GUI前端使用Qt5框架\cite{qtdoc}编写完成。整个图形界面分为菜单栏（上侧），工具栏（左侧），绘图区（中部），图元列表（右侧）和状态栏（下侧）这几部分。图形界面使用Qt Creator工具设计。
 
 在GUI前端中，实现了\lstinline|class ImageDevice|的子类\lstinline|class QImageDevice|，该子类是对\lstinline|QImage|相关操作的抽象。通过该设备可以将图像绘制到\lstinline|QImage|对象中，再通过GUI界面的\lstinline|QLabel|将\lstinline|QImage|显示在屏幕上。
 
